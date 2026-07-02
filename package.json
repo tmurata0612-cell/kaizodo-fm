@@ -1,0 +1,8 @@
+{
+  "name": "kaizodo-fm",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate.mjs content/*.json"
+  }
+}

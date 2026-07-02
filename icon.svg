@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0F1220"/>
+  <g stroke="#2A3050" stroke-width="6">
+    <line x1="96" y1="200" x2="96" y2="240"/>
+    <line x1="144" y1="188" x2="144" y2="240"/>
+    <line x1="192" y1="200" x2="192" y2="240"/>
+    <line x1="240" y1="188" x2="240" y2="240"/>
+    <line x1="288" y1="200" x2="288" y2="240"/>
+    <line x1="336" y1="188" x2="336" y2="240"/>
+    <line x1="384" y1="200" x2="384" y2="240"/>
+    <line x1="432" y1="188" x2="432" y2="240"/>
+  </g>
+  <line x1="240" y1="160" x2="240" y2="268" stroke="#E8A04C" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="240" cy="140" r="14" fill="#E8A04C"/>
+  <text x="256" y="400" font-family="serif" font-size="120" font-weight="700" fill="#EAE7DC" text-anchor="middle">解</text>
+</svg>
