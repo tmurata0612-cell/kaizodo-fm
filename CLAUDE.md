@@ -8,22 +8,22 @@
 - **構成**: ビルド工程なしの vanilla JS (ES modules)。`js/app.js`が起動と画面切替、`js/store.js`がlocalStorage層、各タブは`js/{suiri,lens,radio,zukan,kiroku,settings,home}.js`
 - **キャラ**: フェイ(MC/fei)とヒナタ(hinata)。`data/characters.json` + GENERATION.mdのキャラバイブル参照
 
-## 現在のステータス (2026-07-02 時点)
+## 現在のステータス (2026-07-03 時点)
 
 完了:
 - コンテンツ基盤(data/models.json 100個、data/lenses.json 16本、characters、validate.mjs、GENERATION.md)
 - PWAアプリ全実装(index.html, css, js/全モジュール, manifest, sw.js, icon.svg)
 - 初期コンテンツ3本(content/2026-07-02.json + evergreen/ev-1,ev-2)— **validate全通過済み**
-- git init 済み(まだ一度もcommitしていない)
+- ユーザーフィードバック第1弾を全反映(グローバル再生 `js/player.js`・ミニプレイヤー・シークバー/行タップ再生・速度6段階・自然音声の自動選択・設定保存で元画面復帰・図鑑詳細・アーカイブおかわり・キャラ雑談オープニング・モバイルレイアウト)
+- ヘッドレスChrome(モバイル390px viewport)で全17項目の動作検証PASS。アーカイブ行タップ時の navigate(undefined) バグを修正済み
+- **初回 git commit 済み(b0edb9b)**。git identity はリポジトリローカルに設定済み
 
 ## 次のセッションでやること(この順で)
 
-1. `node --check` で js/*.js と sw.js の構文確認 → ローカルHTTPサーバ(`python -m http.server`)で全タブの動作確認(推理フロー完走・クイズ・ラジオ再生・図鑑・記録・設定・エクスポート)
-2. 初回 git commit
-3. `gh` CLI が未インストール → `winget install GitHub.cli` → `gh auth login` → `gh repo create kaizodo-fm --public` → push → GitHub Pages有効化(main / root)。ユーザーにPages URLを渡しスマホで「ホーム画面に追加」してもらう
-4. /schedule スキルで毎朝 JST 05:30 頃の日次生成ルーティン作成。プロンプトは「このリポジトリのGENERATION.mdに従い当日エピソードを生成→validate→commit/push」のみ。※ユーザーのサブスク使用量を消費する旨を伝える
-5. 設計スペックを docs/superpowers/specs/2026-07-02-kaizodo-fm-design.md に保存
-6. ローカルPCのメモリーファイル(`~/.claude/projects/.../memory/`)のステータスを更新
+1. `gh` CLI が未インストール → `winget install GitHub.cli` → `gh auth login`(ユーザーのブラウザ認証が必要) → `gh repo create kaizodo-fm --public` → push → GitHub Pages有効化(main / root)。ユーザーにPages URLを渡しスマホで「ホーム画面に追加」してもらう
+2. /schedule スキルで毎朝 JST 05:30 頃の日次生成ルーティン作成。プロンプトは「このリポジトリのGENERATION.mdに従い当日エピソードを生成→validate→commit/push」のみ。※ユーザーのサブスク使用量を消費する旨を伝える
+3. 設計スペックを docs/superpowers/specs/2026-07-02-kaizodo-fm-design.md に保存
+4. スマホ実機でユーザーに触ってもらいフィードバック第2弾を回収(特に音声の自然さは実機の音声エンジン依存のため実機でしか確認できない)
 
 ## 注意点
 
