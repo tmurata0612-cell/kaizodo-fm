@@ -58,6 +58,7 @@ function renderStep(el, app, draft) {
   if (draft.step === 2) {
     el.innerHTML = `${bar}
       <h1 class="view-title">あなたの仮説</h1>
+      <div class="card"><p><strong>${esc(s.title)}</strong></p><p class="small">${esc(s.event)}</p></div>
       <p class="small">一文でOK。「たぶん◯◯だから、◯◯なんだと思う」。書くと思考が固定され、答え合わせが効きます(スキップも可)。</p>
       <textarea class="input" id="free" placeholder="この出来事の背景には…">${esc(draft.freeText)}</textarea>
       <button class="btn" id="next">次へ</button>`;

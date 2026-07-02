@@ -7,7 +7,9 @@ export function renderZukan(el, app) {
 
 function renderGrid(el, app) {
   const models = app.data.models.models;
-  const opened = models.filter(m => m.deliveredOn);
+  const evergreenIds = new Set((app.data.index?.evergreen || []).map(e => e.modelId));
+  const isOpen = m => !!m.deliveredOn || evergreenIds.has(m.id);
+  const opened = models.filter(isOpen);
   const cats = [...new Set(models.map(m => m.category))];
 
   el.innerHTML = `
@@ -16,9 +18,9 @@ function renderGrid(el, app) {
       — 毎日1つずつ、世界を見る道具が増えていきます(リスト自体も成長します)</p>
     ${cats.map(cat => {
       const items = models.filter(m => m.category === cat);
-      return `<div class="zukan-cat">${esc(cat)} (${items.filter(m => m.deliveredOn).length}/${items.length})</div>
+      return `<div class="zukan-cat">${esc(cat)} (${items.filter(isOpen).length}/${items.length})</div>
       <div class="zukan-grid">
-        ${items.map(m => m.deliveredOn ? `
+        ${items.map(m => isOpen(m) ? `
           <button class="zukan-item" data-id="${m.id}">
             <div class="zname"><strong>${esc(m.name)}</strong></div>
             <div class="stars">${"★".repeat(app.store.modelState(m.id).stars)}${"☆".repeat(Math.max(0, 3 - app.store.modelState(m.id).stars))}</div>
@@ -43,7 +45,7 @@ function renderDetail(el, app, modelId) {
 
   el.innerHTML = `
     <button class="btn btn-ghost" id="backToGrid" style="width:auto;padding:8px 18px;margin-bottom:14px">← 図鑑にもどる</button>
-    <div class="eyebrow">${esc(m.category)} — ${m.deliveredOn} 開放</div>
+    <div class="eyebrow">${esc(m.category)} — ${esc(m.deliveredOn || "evergreen")} 開放</div>
     <h1 class="view-title">${esc(m.name)}</h1>
     <div class="card key-insight">
       <p>${esc(m.oneLiner)}</p>
