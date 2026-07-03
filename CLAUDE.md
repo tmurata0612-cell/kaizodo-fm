@@ -22,17 +22,18 @@
 - **GitHub Pages 公開済み**(main / root): https://tmurata0612-cell.github.io/kaizodo-fm/
 - **作り置きプール+事前生成音声方式への全面移行を決定**(2026-07-03): 設計は `docs/superpowers/specs/2026-07-03-pregenerated-audio-and-content-pool.md` が唯一の正。決定事項: 音声はGitHub Releases(タグ `audio-v1`)、ラジオ本編のみ音声化、TTS=VOICEVOX(**フェイ=青山龍星ノーマル、ヒナタ=雨晴はう speed1.1** — ユーザーが聴き比べで選定、変更禁止)、MP3 48kbps mono、初期50本→以降は依頼ベースで追加。GENERATION.mdも改訂済み
 - 日次生成ルーティン(`trig_01GnFp8mf86GeQMGjQc2fAWd`)は**無効化済み**(APIでは削除不可。完全削除はユーザーが https://claude.ai/code/routines から)
-- 声の聴き比べサンプル生成環境がスクラッチパッドにある(VOICEVOX 0.25.2 windows-cpu、edge-tts、lameenc)。ただしスクラッチパッドはセッション毎に変わるため、次セッションではVOICEVOXエンジンの再取得が必要になりうる(`gh release download -R VOICEVOX/voicevox_engine` — このPCはcurl/pipがSSL検証で失敗するためghを使う。pipは`--trusted-host`で回避可)
+- **実装フェーズ1完了**(2026-07-03): `scripts/make_audio.py`(本番パイプライン)、ep-1/ep-2(音声付き・validate通過・Release `audio-v1` にアップロード済み・URL疎通確認済み)、validate.mjs拡張(id方式+radio.audio検証)、変数枠`{{listener}}`/`{{streak}}`は全廃(音声とテキストのズレ防止。GENERATION.mdに明記)
+- **VOICEVOXエンジンはリポジトリ内 `.voicevox/`(git管理外、約2GB)に配置済み**。起動: `.voicevox\run.exe --host 127.0.0.1 --port 50021`(起動に1〜2分)。再取得する場合は `gh release download -R VOICEVOX/voicevox_engine`(このPCはcurl/pipがSSL検証で失敗するためghを使う。pipは`--trusted-host`で回避可。7z展開は7zr.exe)
+- 音声生成の実測: 1話(約47行・6.5〜7分)のCPU合成に3〜5分。mp3は1話2.2〜2.4MB
 
 ## 次のセッションでやること(この順で)
 
-設計スペック `2026-07-03-pregenerated-audio-and-content-pool.md` の「実装順序」に従う:
+設計スペック `2026-07-03-pregenerated-audio-and-content-pool.md` の「実装順序」の続き(フェーズ1は完了済み):
 
-1. スキーマ改訂+`scripts/make_audio.py`+試作1本(ep-1 = 旧ev-1を音声化しReleasesへ)
-2. アプリ改修(player.js の `<audio>` エンジン・app.js のプールローテーション・VOICEVOXクレジット表記・sw.js VERSION・validate.mjs拡張)→ ヘッドレス検証
-3. **実機でバックグラウンド再生を確認**(方式の成否がここで確定。台本量産より先にやる)
-4. 台本49本のバッチ生成(数セッションに分割)→ 音声一括生成+アップロード
-5. スマホ実機でユーザーフィードバック第2弾を回収
+1. アプリ改修: player.js に `<audio>` エンジン追加(`radio.audio` があれば使い、なければ従来speechSynthesis。行タップ=lineStartSecシーク・Media Session・速度6段階=playbackRate)、app.js をプールローテーションへ(EV_COUNT廃止、index.json を pool/archive 形式に更新、旧 evergreen/ フォルダ削除)、VOICEVOXクレジット表記、sw.js VERSION上げ → ヘッドレスChrome検証
+2. **実機でバックグラウンド再生を確認**(方式の成否がここで確定。台本量産より先にやる)
+3. 台本49本のバッチ生成(数セッションに分割)→ 音声一括生成+アップロード
+4. スマホ実機でユーザーフィードバック第2弾を回収
 
 ## 注意点
 
