@@ -2,6 +2,8 @@
 // UI(radio.js / ミニプレイヤー)は subscribe で状態を受け取って描画するだけ。
 import { store } from "./store.js";
 
+const MEDIA_SESSION_SUPPORTED = typeof navigator !== "undefined" && "mediaSession" in navigator;
+
 export const RATES = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0];
 
 const listeners = new Set();
@@ -20,7 +22,7 @@ const state = {
   onComplete: null,
 };
 
-function emit() { listeners.forEach(cb => { try { cb(state); } catch { /* UI側の例外は無視 */ } }); }
+function emit() { syncMediaSession(); listeners.forEach(cb => { try { cb(state); } catch { /* UI側の例外は無視 */ } }); }
 
 // --- 声の自動選択: 最も自然な日本語音声を優先する ---
 function voiceScore(v) {
@@ -86,6 +88,35 @@ function finish() {
   state.onComplete = null; // 完了は1回だけ
   emit();
   if (cb) cb(state.key);
+}
+
+function initMediaSession() {
+  if (!MEDIA_SESSION_SUPPORTED) return;
+  navigator.mediaSession.setActionHandler("play", () => player.play());
+  navigator.mediaSession.setActionHandler("pause", () => player.pause());
+  navigator.mediaSession.setActionHandler("previoustrack", () => player.prev());
+  navigator.mediaSession.setActionHandler("nexttrack", () => player.next());
+}
+
+function syncMediaSession() {
+  if (!MEDIA_SESSION_SUPPORTED) return;
+  try {
+    if (!state.key) {
+      navigator.mediaSession.metadata = null;
+      navigator.mediaSession.playbackState = "none";
+      return;
+    }
+    const line = state.script[state.lineIndex];
+    const speakerName = line ? (state.chars[line.speaker]?.name || line.speaker) : "";
+    const lineText = line ? line.text.slice(0, 40) : "";
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: state.title,
+      artist: line ? `${speakerName}: ${lineText}` : "",
+      album: "解像度FM",
+      artwork: [{ src: "icon.svg", sizes: "512x512", type: "image/svg+xml" }],
+    });
+    navigator.mediaSession.playbackState = state.playing ? "playing" : "paused";
+  } catch { /* Media Session更新の失敗で再生自体は止めない */ }
 }
 
 export const player = {
@@ -165,3 +196,5 @@ export const player = {
     return next;
   },
 };
+
+initMediaSession();
