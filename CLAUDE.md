@@ -28,13 +28,14 @@
 - **実装フェーズ2完了**(2026-07-03): アプリをプール方式+audioエンジンに改修。`player.js`=二段構え(`radio.audio`があれば`<audio>`+Media Session、なければ従来speechSynthesis。公開APIは共通)、`app.js`=プールローテーション(`EV_COUNT`廃止、`poolKeyForToday()`=dayNum%pool.length、`app.todayKey`)、`content/index.json`=pool/archive形式、`content/evergreen/`削除(ep-1/ep-2へ編入済み)、VOICEVOXクレジットをradio.js(音声再生時)とsettings.jsに表示、`sw.js` VERSION=v4。**ヘッドレスChrome(390px)で14/14 PASS**(プール解決/audioモード/台本描画/クレジット/行タップseek/速度変更/ミニプレイヤー/tts後方互換)。validate 3本全通過。commit/push 済み(`a729b17`)
 - **実機バックグラウンド再生の確認 成功**(2026-07-03): スマホ実機で画面ロック・アプリ切替・ロック画面コントロール・Bluetooth操作を確認済み。**事前生成音声方式の成否が確定 = 採用でGO**。以降は台本量産フェーズへ
 - **台本量産バッチ①(2026-07-03〜04)**: ep-3(規格戦争/network-effects/テクノロジー)・ep-4(自然渋滞/emergence/科学)・ep-5(資源の呪い/rent-seeking/国際)を生成。**validate 全通過**、index.json pool と models.json deliveredOn 更新済み。**音声生成→Release `audio-v1` へアップロード済み・gh で疎通確認済み**(ep-3=6.2分、ep-4=6.1分、ep-5=6.0分、各約2.1〜2.2MB。`radio.audio` 書き戻し済み=audioモード再生)。sw.js は content/ が network-first のため VERSION 据え置きでOK。プールは現在 **5/50本**、残り45本
+- **Pages を GitHub Actions デプロイに移行(項目A完了・2026-07-04)**: `.github/workflows/pages.yml` を追加(`actions/upload-pages-artifact@v3` で `path: .` = ルート全体を静的配信 → `actions/deploy-pages@v4`。push[main] と workflow_dispatch でトリガ、`concurrency: pages`)。Pages ソースを **legacy → workflow に切替済み**(`gh api -X PUT repos/.../pages -f build_type=workflow`)。commit `fa38af8`。**ライブサイトが最新(ep-1〜5)を配信していることを WebFetch で確認済み**。移行時の落とし穴2つ(次回のため記録): ①build_type 切替を run 実行中にやるとその run はレースで deploy 失敗する→切替後に**新規 run を出し直す**。②失敗しても `gh run rerun --failed` は使わない(単一ジョブなので Upload artifact も再実行され「github-pages アーティファクトが2つ」で deploy が拒否)。正しい再実行は `gh workflow run pages.yml --ref main`
 - **音声の漢字読み対策(次セッション項目B)を実装(2026-07-04)**: (1) **読み検査ツール `scripts/check_readings.py`** — 全台本を `/audio_query` に流し「原文→読み仮名[アクセント核]」を `audio_out/readings.md` に出力(耳でなく機械的に誤読特定)。`--word 語…` で単語プローブも。(2) **リポ管理ユーザー辞書 `data/voicevox_dict.json`** ＋ 冪等な流し込み `scripts/vv_dict.py`。make_audio.py / check_readings.py が合成前に自動反映。台本は漢字のまま矯正できるのが利点。**priority=10** でシステム辞書の既存短語(一言・新店など)に勝てる。(3) 全5話検査で**確定誤読5語を修正**: 一言(誤:イチゲン)・この前(誤:コノゼン)・乱高下(誤:ランダカ/クダシ)・新店(シンミセ→シンテン採用)・レントシーキング(分割解消)。**ep-1/2/3/5 の音声を再生成→validate全通過→Release再アップロード済み**(ep-4は対象語なしで未変更)。GENERATION.md に辞書運用と読み検査(手順7)を追記。**残: アクセントは accent_type で単語単位のみ矯正可(文全体の抑揚は audio_query 行編集が必要=未着手)。実機フィードバック第2弾で耳確認しつつ辞書を育てる運用**
 
 ## 次のセッションでやること(この順で)
 
-**最優先(2026-07-04 の申し送り。ユーザーが次回やると明言):**
+**過去の最優先(いずれも対応済み。履歴として残す):**
 
-- **A. GitHub Pages を GitHub Actions ベースのデプロイに切り替える**。理由: legacy 版 Pages ビルドが不安定で、push で自動起動するビルドが `building` のまま停止する事象が再発(2026-07-04 に発生。b1e7f23 が丸1日停止し、ライブサイトが a729b17 で凍結 → 図鑑に ratchet-effect だけ表示 という「反映されないバグ」の真因だった)。履歴に `errored` ビルドも複数。手動 `gh api -X POST repos/OWNER/REPO/pages/builds` で叩けば通るが恒久策にならない。`.github/workflows/` に Pages デプロイワークフローを追加し、Pages のソースを "GitHub Actions" に変更する(`gh api repos/.../pages` の `build_type` が現状 `legacy`)
+- ~~**A. GitHub Pages を GitHub Actions ベースのデプロイに切り替える**~~: **2026-07-04 に対応済み**(上の「Pages を GitHub Actions デプロイに移行」参照)。legacy ビルド停止の恒久対策として `.github/workflows/pages.yml` を追加し、ソースを workflow に切替。以後は push[main] で自動デプロイ、`gh run watch` で確認できる
 - ~~**B. 音声の読み上げ品質の相談**~~: **2026-07-04 に対応済み**(上の「音声の漢字読み対策」参照)。読み検査ツール＋ユーザー辞書の仕組みを構築し、既知の誤読5語を修正・再生成・再アップロード済み。今後は新エピソード生成時に手順7(`check_readings.py`)を必ず通し、誤読を見つけたら `data/voicevox_dict.json` に追加する運用。**未了はアクセント(文全体の抑揚)の矯正**と、実機での耳確認
 
 設計スペック `2026-07-03-pregenerated-audio-and-content-pool.md` の「実装順序」の続き(フェーズ1・2・実機検証まで完了):
@@ -51,5 +52,5 @@
 - 番組の日替わりは `app.js` の `poolKeyForToday()`(dayNum % pool.length)。`app.todayKey` が「本日の放送」の唯一の基準(home.js もこれを参照)
 - 音声メタ `radio.audio`(url/durationSec/lineStartSec)があれば player.js は audioモード、なければ ttsモード。過去のアーカイブ回(2026-07-02 等)は audioなし=speechSynthesis のまま
 - GitHub Pages は公開リポジトリ。個人情報・仮説ログは絶対にリポジトリへ入れない
-- **【暫定】Pages ビルドが停止しやすい(次セッション項目A で恒久対策予定)**。push 後にライブサイトが更新されないときは `gh api -X POST repos/tmurata0612-cell/kaizodo-fm/pages/builds` で手動再ビルド → `gh api .../pages/builds/latest --jq .status` が `built` になるまで確認。content と data/models.json は network-first なので、サーバー更新後はアプリを開き直せば反映される(アプリ本体JSを変えた場合のみ sw.js VERSION も上げる)
+- **Pages は GitHub Actions デプロイ(2026-07-04 移行済み)**。push[main] で `.github/workflows/pages.yml` が自動デプロイする。確認: `gh run list --workflow=pages.yml --limit 1` / `gh run watch <id> --exit-status`。手動デプロイは `gh workflow run pages.yml --ref main`。**デプロイが失敗しても `gh run rerun --failed` は使わない**(単一ジョブで Upload artifact が再実行され「github-pages アーティファクト2つ」で拒否される)→ 必ず `gh workflow run` で新規 run を出す。content と data/models.json は network-first なので、デプロイ完了後はアプリを開き直せば反映される(アプリ本体JSを変えた場合のみ sw.js VERSION も上げる)。curl はこのPCのSSL事情で使えないので疎通確認は WebFetch か gh を使う
 - VOICEVOXクレジット表記(「VOICEVOX:青山龍星」「VOICEVOX:雨晴はう」)は利用規約上の必須条件。アプリから消さない
