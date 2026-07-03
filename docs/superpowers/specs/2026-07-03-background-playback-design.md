@@ -1,5 +1,7 @@
 # バックグラウンド再生対応 — 設計
 
+> **廃止(2026-07-03)**: 本スペックは同日中に `2026-07-03-pregenerated-audio-and-content-pool.md` に置き換えられた。speechSynthesis はブラウザのバックグラウンド制限で停止する根本限界があり、Media Session の追加では解決しないため、事前生成音声ファイル方式へ全面移行する。Media Session の設計(メタデータ・ハンドラ構成)は新スペックの `<audio>` エンジンに引き継がれている。
+
 - 日付: 2026-07-03
 - 対象: `js/player.js`
 - 対象端末: Android Chrome(ホーム画面追加PWA含む)
