@@ -25,20 +25,21 @@
 - **実装フェーズ1完了**(2026-07-03): `scripts/make_audio.py`(本番パイプライン)、ep-1/ep-2(音声付き・validate通過・Release `audio-v1` にアップロード済み・URL疎通確認済み)、validate.mjs拡張(id方式+radio.audio検証)、変数枠`{{listener}}`/`{{streak}}`は全廃(音声とテキストのズレ防止。GENERATION.mdに明記)
 - **VOICEVOXエンジンはリポジトリ内 `.voicevox/`(git管理外、約2GB)に配置済み**。起動: `.voicevox\run.exe --host 127.0.0.1 --port 50021`(起動に1〜2分)。再取得する場合は `gh release download -R VOICEVOX/voicevox_engine`(このPCはcurl/pipがSSL検証で失敗するためghを使う。pipは`--trusted-host`で回避可。7z展開は7zr.exe)
 - 音声生成の実測: 1話(約47行・6.5〜7分)のCPU合成に3〜5分。mp3は1話2.2〜2.4MB
+- **実装フェーズ2完了**(2026-07-03): アプリをプール方式+audioエンジンに改修。`player.js`=二段構え(`radio.audio`があれば`<audio>`+Media Session、なければ従来speechSynthesis。公開APIは共通)、`app.js`=プールローテーション(`EV_COUNT`廃止、`poolKeyForToday()`=dayNum%pool.length、`app.todayKey`)、`content/index.json`=pool/archive形式、`content/evergreen/`削除(ep-1/ep-2へ編入済み)、VOICEVOXクレジットをradio.js(音声再生時)とsettings.jsに表示、`sw.js` VERSION=v4。**ヘッドレスChrome(390px)で14/14 PASS**(プール解決/audioモード/台本描画/クレジット/行タップseek/速度変更/ミニプレイヤー/tts後方互換)。validate 3本全通過。**※実機バックグラウンド再生は未検証(次タスク)。commit 前**
 
 ## 次のセッションでやること(この順で)
 
-設計スペック `2026-07-03-pregenerated-audio-and-content-pool.md` の「実装順序」の続き(フェーズ1は完了済み):
+設計スペック `2026-07-03-pregenerated-audio-and-content-pool.md` の「実装順序」の続き(フェーズ1・2完了済み):
 
-1. アプリ改修: player.js に `<audio>` エンジン追加(`radio.audio` があれば使い、なければ従来speechSynthesis。行タップ=lineStartSecシーク・Media Session・速度6段階=playbackRate)、app.js をプールローテーションへ(EV_COUNT廃止、index.json を pool/archive 形式に更新、旧 evergreen/ フォルダ削除)、VOICEVOXクレジット表記、sw.js VERSION上げ → ヘッドレスChrome検証
-2. **実機でバックグラウンド再生を確認**(方式の成否がここで確定。台本量産より先にやる)
-3. 台本49本のバッチ生成(数セッションに分割)→ 音声一括生成+アップロード
-4. スマホ実機でユーザーフィードバック第2弾を回収
+1. **実機でバックグラウンド再生を確認**(方式の成否がここで確定。台本量産より先にやる)。GitHub Pages 反映後、スマホ実機で画面ロック・アプリ切替・ロック画面コントロール・Bluetooth操作をテスト
+2. 台本49本のバッチ生成(数セッションに分割)→ 音声一括生成+アップロード
+3. スマホ実機でユーザーフィードバック第2弾を回収
 
 ## 注意点
 
 - `sw.js` のキャッシュバージョン(`VERSION`)はアプリのファイルを変更したら上げる
 - エピソード追加時は `content/index.json`(pool)への追記と `data/models.json` の `deliveredOn` 記入を忘れない(GENERATION.md生成手順の9-10)
-- app.js の evergreen ローテーション(`EV_COUNT`)はプール方式への改修で廃止予定。改修まで既存動作を壊さない
+- 番組の日替わりは `app.js` の `poolKeyForToday()`(dayNum % pool.length)。`app.todayKey` が「本日の放送」の唯一の基準(home.js もこれを参照)
+- 音声メタ `radio.audio`(url/durationSec/lineStartSec)があれば player.js は audioモード、なければ ttsモード。過去のアーカイブ回(2026-07-02 等)は audioなし=speechSynthesis のまま
 - GitHub Pages は公開リポジトリ。個人情報・仮説ログは絶対にリポジトリへ入れない
 - VOICEVOXクレジット表記(「VOICEVOX:青山龍星」「VOICEVOX:雨晴はう」)は利用規約上の必須条件。アプリから消さない

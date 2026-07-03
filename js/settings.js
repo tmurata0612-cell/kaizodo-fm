@@ -39,6 +39,11 @@ export function renderSettings(el, app) {
     <div class="card">
       <button class="btn btn-ghost" id="resetBtn" style="color:var(--red)">すべての記録を消去</button>
     </div>
+    <div class="card credits">
+      <p><strong>クレジット</strong></p>
+      <p class="small">ラジオ本編の音声は VOICEVOX で生成しています。<br>
+        VOICEVOX：青山龍星（フェイ）／VOICEVOX：雨晴はう（ヒナタ）</p>
+    </div>
     <button class="btn" id="saveBtn">保存する</button>`;
 
   el.querySelector("#saveBtn").onclick = () => {

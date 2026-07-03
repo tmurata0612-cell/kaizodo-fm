@@ -28,6 +28,7 @@ export function renderRadio(el, app) {
     </div>
     <div class="eq" aria-hidden="true">${"<i></i>".repeat(20)}</div>
     <p class="small" id="voiceNote">${player.supported ? "台本の行をタップすると、そこから再生します。" : "このブラウザは読み上げに未対応です。台本をお楽しみください。"}</p>
+    ${ep.radio.audio ? `<p class="small credit">音声合成: VOICEVOX（フェイ＝青山龍星／ヒナタ＝雨晴はう）</p>` : ""}
     <div id="scriptBox">
       ${ps.script.map((line, i) => `
         <div class="script-line ${line.speaker}" data-i="${i}" role="button" tabindex="0">

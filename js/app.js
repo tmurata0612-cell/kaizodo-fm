@@ -9,14 +9,13 @@ import { renderZukan } from "./zukan.js";
 import { renderKiroku } from "./kiroku.js";
 import { renderSettings } from "./settings.js";
 
-const EV_COUNT = 2; // content/evergreen/ev-1..N (増やしたら index.json の evergreen も更新)
-
 const app = {
   store,
   player,
   data: { lenses: null, models: null, characters: null, index: null },
   episode: null,
-  episodeMeta: { key: null, isEvergreen: false, isToday: false },
+  episodeMeta: { key: null, isPool: false, isToday: false },
+  todayKey: null, // ローテーションで決まった「本日の放送」のキー
   navigate,
   goBack,
   episodeKey() { return this.episodeMeta.key; },
@@ -34,28 +33,27 @@ const app = {
       .replaceAll("{{listener}}", s.listenerName || "あなた");
   },
 
-  // エピソードのカタログ(アーカイブ一覧用)
+  // エピソードのカタログ(アーカイブ一覧用): プール回 + 過去のアーカイブ回
   catalog() {
-    const daily = (this.data.index?.episodes || []).map(e => ({
+    const pool = (this.data.index?.pool || []).map(e => ({
+      key: e.id, label: "プール", topic: e.topic, genre: e.genre,
+    }));
+    const archive = (this.data.index?.archive || []).map(e => ({
       key: e.date, label: e.date.replaceAll("-", "."), topic: e.topic, genre: e.genre,
     }));
-    const ev = (this.data.index?.evergreen || []).map(e => ({
-      key: e.key, label: "アーカイブ", topic: e.topic, genre: e.genre,
-    }));
-    return [...daily, ...ev];
+    return [...pool, ...archive];
   },
   episodeDone(key) {
     const log = store.dayLog(key);
     return !!(log?.suiri?.done && log?.quiz && log?.radioDone);
   },
 
-  // key: "YYYY-MM-DD" または "ev-N"
+  // key: "ep-N"(プール) または "YYYY-MM-DD"(アーカイブ)。どちらも content/ 直下
   async setEpisode(key, { go = "home" } = {}) {
-    const path = /^\d{4}-\d{2}-\d{2}$/.test(key) ? `content/${key}.json` : `content/evergreen/${key}.json`;
-    const ep = await fetchJson(path, { fresh: true });
+    const ep = await fetchJson(`content/${key}.json`, { fresh: true });
     if (!ep) return false;
     this.episode = ep;
-    this.episodeMeta = { key, isEvergreen: !/^\d{4}/.test(key), isToday: key === store.today() };
+    this.episodeMeta = { key, isPool: /^ep-\d+$/.test(key), isToday: key === this.todayKey };
     loadIntoPlayer(this);
     if (go) navigate(go);
     return true;
@@ -72,6 +70,7 @@ function loadIntoPlayer(app) {
     script: ep.radio.script.map(l => ({ ...l, text: app.fillVars(l.text) })),
     chars: app.data.characters.characters,
     voiceOverrides: store.get().settings.voices,
+    audio: ep.radio.audio, // あれば <audio> エンジン、なければ speechSynthesis
     onComplete: (key) => {
       if (!store.dayLog(key)?.radioDone) {
         store.setDayLog(key, { radioDone: true, title: ep.suiri?.title });
@@ -118,17 +117,26 @@ async function fetchJson(url, { fresh = false } = {}) {
   } catch { return null; }
 }
 
-// 当日 → evergreen ローテーション の順で初期番組を解決
+// その日のプール回を決める。同じ日は必ず同じ回(dayNum % pool.length)
+function poolKeyForToday() {
+  const pool = app.data.index?.pool || [];
+  if (!pool.length) return null;
+  const dayNum = Math.floor(new Date(store.today() + "T00:00:00+09:00").getTime() / 86400000);
+  return pool[dayNum % pool.length].id;
+}
+
+// 当日の日付回(あれば) → プールローテーション の順で初期番組を解決
 async function resolveInitialEpisode() {
   const today = store.today();
-  if (await app.setEpisode(today, { go: null })) return;
-  const dayNum = Math.floor(new Date(today + "T00:00:00+09:00").getTime() / 86400000);
-  for (let i = 0; i < EV_COUNT; i++) {
-    const key = `ev-${((dayNum + i) % EV_COUNT) + 1}`;
+  app.todayKey = today;
+  if (await app.setEpisode(today, { go: null })) return; // 過去運用の日付回互換(通常は無い)
+  const key = poolKeyForToday();
+  if (key) {
+    app.todayKey = key;
     if (await app.setEpisode(key, { go: null })) return;
   }
   app.episode = null;
-  app.episodeMeta = { key: today, isEvergreen: false, isToday: true };
+  app.episodeMeta = { key: today, isPool: false, isToday: true };
 }
 
 // ---------- ミニプレイヤー(全画面共通の再生コントロール) ----------

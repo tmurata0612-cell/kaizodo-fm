@@ -8,11 +8,11 @@ export function renderHome(el, app) {
   const streak = store.streak();
   const doneCount = [log.suiri?.done, log.quiz, log.radioDone].filter(Boolean).length;
 
-  const feiLine = pickFeiLine({ streak, doneCount, todayDone: store.todayDone(), isEvergreen: app.episodeMeta.isEvergreen, name: app.charName("fei") });
+  const feiLine = pickFeiLine({ streak, doneCount, todayDone: store.todayDone(), isPool: app.episodeMeta.isPool, isToday: app.episodeMeta.isToday, name: app.charName("fei") });
 
   el.innerHTML = `
     <div class="date-line"><span class="d">${today.replaceAll("-", ".")}</span>
-      <span class="ep">${app.episodeMeta.isToday ? "本日の放送" : app.episodeMeta.isEvergreen ? "アーカイブ回" : `${epKey.replaceAll("-", ".")} の回`}</span></div>
+      <span class="ep">${app.episodeMeta.isToday ? "本日の放送" : app.episodeMeta.isPool ? "プール回" : `${epKey.replaceAll("-", ".")} の回`}</span></div>
 
     <div class="fei-line">
       <div class="face">${app.charIcon("fei")}</div>
@@ -62,7 +62,7 @@ export function renderHome(el, app) {
 // アーカイブ一覧: 別のエピソードに切り替えて「おかわり」できる
 function archiveCard(app, currentKey) {
   const items = app.catalog().filter(e => e.key !== currentKey);
-  const todayKey = app.store.today();
+  const todayKey = app.todayKey;
   if (currentKey !== todayKey && app.catalog().some(e => e.key === todayKey)) {
     // 別回を開いている時は「今日の放送に戻る」を先頭に
     items.sort((a, b) => (a.key === todayKey ? -1 : b.key === todayKey ? 1 : 0));
@@ -102,8 +102,8 @@ function monthAgoCard(app) {
   </button>`;
 }
 
-function pickFeiLine({ streak, doneCount, todayDone, isEvergreen, name }) {
-  if (isEvergreen) return "今日は特別にアーカイブから一本。時事より一段普遍的な問いです、じっくりどうぞ。";
+function pickFeiLine({ streak, doneCount, todayDone, isPool, isToday, name }) {
+  if (isPool && !isToday) return "アーカイブから一本、おかわりですね。時事に縛られない普遍的な問いです、じっくりどうぞ。";
   if (doneCount === 3) return "今日の放送は全部聴いてくれたんですね。また明日、いい問いを用意しておきます。";
   if (todayDone) return "続きはお好きな時間にどうぞ。世界は逃げませんから。";
   if (streak >= 30) return `連続${streak}日。もう習慣というより、生き方ですね。今日の題材もなかなかですよ。`;
