@@ -1,0 +1,10 @@
+{
+  "note": "VOICEVOXユーザー辞書(読み・アクセントの矯正)。scripts/vv_dict.py が make_audio.py / check_readings.py の合成前にエンジンへ流し込む。ここがリポジトリ上の唯一の正。追加手順は GENERATION.md「音声生成」を参照。pronunciation はカタカナ(長音は ー でも オ でも可)、accent_type はアクセント核(0=平板、n=n番目のモーラで下がる)、priority はシステム辞書に勝たせたいとき 10。誤読を見つけたら check_readings.py で現在の読みを確認し、ここに1語追加 → 該当エピソードの音声を再生成する。",
+  "words": [
+    { "surface": "乱高下", "pronunciation": "ランコーゲ", "accent_type": 0, "word_type": "COMMON_NOUN", "priority": 8, "reason": "既定では『ランダカ・クダシ』に誤分割される" },
+    { "surface": "一言", "pronunciation": "ヒトコト", "accent_type": 2, "word_type": "COMMON_NOUN", "priority": 10, "reason": "『中で一言』等の文脈で『イチゲン』に誤読される" },
+    { "surface": "この前", "pronunciation": "コノマエ", "accent_type": 0, "word_type": "COMMON_NOUN", "priority": 10, "reason": "『この前スマホ』等で 前 が『ゼン』に誤読される" },
+    { "surface": "新店", "pronunciation": "シンテン", "accent_type": 0, "word_type": "COMMON_NOUN", "priority": 10, "reason": "既定は『シンミセ』。番組では『シンテン』を採用" },
+    { "surface": "レントシーキング", "pronunciation": "レントシーキング", "accent_type": 4, "word_type": "COMMON_NOUN", "priority": 8, "reason": "既定では『レン・トシイキング』に分割される" }
+  ]
+}

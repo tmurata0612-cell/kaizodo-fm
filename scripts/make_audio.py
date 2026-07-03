@@ -20,6 +20,8 @@ from pathlib import Path
 
 import lameenc
 
+from vv_dict import apply_user_dict
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "audio_out"
 ENGINE = "http://127.0.0.1:50021"
@@ -46,6 +48,8 @@ def api(path, method="POST", body=None, query=None):
     with urllib.request.urlopen(req, data=data, timeout=300) as r:
         raw = r.read()
         ct = r.headers.get("Content-Type", "")
+    if not raw:
+        return None  # DELETE 等の 204 No Content
     return json.loads(raw) if "json" in ct else raw
 
 
@@ -129,6 +133,8 @@ def main():
     if not ep_ids or any(not re.fullmatch(r"ep-\d+", e) for e in ep_ids):
         sys.exit("usage: python scripts/make_audio.py ep-N [ep-M ...]")
     style_ids = resolve_style_ids()
+    n = apply_user_dict(api)
+    print(f"ユーザー辞書を反映: {n}語")
     for ep_id in ep_ids:
         make_episode(ep_id, style_ids)
 

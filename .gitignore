@@ -2,6 +2,7 @@
 Thumbs.db
 .DS_Store
 node_modules/
+__pycache__/
 
 # ローカル設定(セッション許可リスト等。公開リポジトリに含めない)
 .claude/

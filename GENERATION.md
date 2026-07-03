@@ -16,12 +16,13 @@
 4. `data/lenses.json` からその題材に効くレンズを**3〜5本**選ぶ
 5. 本書のスキーマと文体基準に従い `content/ep-N.json` を書く(N は既存の最大+1)
 6. `node scripts/validate.mjs content/ep-N.json` を実行し、**パスするまで修正**する
-7. 音声を生成する: VOICEVOXエンジンを起動し `python scripts/make_audio.py ep-N`(mp3生成と `radio.audio` の書き戻し)
-8. `gh release upload audio-v1 audio_out/ep-N.mp3` でアップロードする
-9. `data/models.json` の該当モデルに `deliveredOn`(作成日)を記入する
-10. `content/index.json` の `pool` に追記する
-11. models.json の未使用(deliveredOn: null)が**30個を切っていたら**、新しいメンタルモデルを10個追加する(下記「モデルリストの拡張」)
-12. commit する。メッセージは `episode: ep-N 題材の短い名前`。push する
+7. **読みを検査する**: VOICEVOXエンジンを起動し `python scripts/check_readings.py ep-N` → `audio_out/readings.md` で「原文 → 読み仮名[アクセント核]」を確認。誤読(同形異音語・固有名詞・数字+助数詞など)があれば `data/voicevox_dict.json` に1語追加する(手順は「音声生成」参照)。**音声を作る前に必ず通す**
+8. 音声を生成する: `python scripts/make_audio.py ep-N`(mp3生成と `radio.audio` の書き戻し。ユーザー辞書は自動反映される)
+9. `gh release upload audio-v1 audio_out/ep-N.mp3` でアップロードする
+10. `data/models.json` の該当モデルに `deliveredOn`(作成日)を記入する
+11. `content/index.json` の `pool` に追記する
+12. models.json の未使用(deliveredOn: null)が**30個を切っていたら**、新しいメンタルモデルを10個追加する(下記「モデルリストの拡張」)
+13. commit する。メッセージは `episode: ep-N 題材の短い名前`。push する
 
 ## 題材の選定基準(推理のお題)
 
@@ -160,6 +161,15 @@
 - フォーマット: MP3 48kbps mono 24kHz。1話約8分 ≈ 3MB
 - アプリ内の「VOICEVOX:青山龍星」「VOICEVOX:雨晴はう」クレジット表記は利用規約上の必須条件。消さない
 - 推理・レンズタブの読み上げは音声化しない(アプリ内の speechSynthesis 担当)
+
+### 読みの矯正(ユーザー辞書)
+
+VOICEVOX(OpenJTalk)は漢字を誤読することがある(同形異音語=「一言→イチゲン」、固有名詞、数字+助数詞など)。対策は**リポジトリ管理のユーザー辞書** `data/voicevox_dict.json`。`make_audio.py` と `check_readings.py` が合成前に自動でエンジンへ反映する(`scripts/vv_dict.py`)。台本テキストはそのまま(漢字のまま)にできるのが利点。
+
+- **手順**: 誤読を見つけたら `check_readings.py` で現在の読みを確認 → `voicevox_dict.json` の `words` に `{surface, pronunciation(カタカナ), accent_type(0=平板/n=n番目で下降), word_type, priority}` を1語追加 → **該当エピソードの音声を再生成**(辞書はエンジン内の永続設定なので、既存音声は作り直さないと変わらない)
+- **priority**: システム辞書の既存語(「一言」「新店」など)に勝たせたいときは `10`。無名の語は `8` で十分
+- **アクセントも矯正できる**: `accent_type` で単語のイントネーションを指定できる(`check_readings.py` の出力 `[n]` が現在のアクセント核)。ただし文全体の抑揚は辞書の範囲外(audio_query の行単位編集が必要)
+- **効かないとき**: 文中で単語が別の語と結合して誤分割される場合がある。priority を上げるか、台本側に読点を1つ足す(例:「この前、スマホ」)と分割が正されることがある
 
 ## content/index.json の形式
 
