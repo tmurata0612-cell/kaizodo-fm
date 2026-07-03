@@ -31,6 +31,11 @@
 
 ## 次のセッションでやること(この順で)
 
+**最優先(2026-07-04 の申し送り。ユーザーが次回やると明言):**
+
+- **A. GitHub Pages を GitHub Actions ベースのデプロイに切り替える**。理由: legacy 版 Pages ビルドが不安定で、push で自動起動するビルドが `building` のまま停止する事象が再発(2026-07-04 に発生。b1e7f23 が丸1日停止し、ライブサイトが a729b17 で凍結 → 図鑑に ratchet-effect だけ表示 という「反映されないバグ」の真因だった)。履歴に `errored` ビルドも複数。手動 `gh api -X POST repos/OWNER/REPO/pages/builds` で叩けば通るが恒久策にならない。`.github/workflows/` に Pages デプロイワークフローを追加し、Pages のソースを "GitHub Actions" に変更する(`gh api repos/.../pages` の `build_type` が現状 `legacy`)
+- **B. 音声の読み上げ品質の相談**: VOICEVOX 生成音声で**漢字の読み方が不自然になることがある**問題。原因切り分けと対策(読み仮名指定・辞書登録・台本側での表記工夫など)を検討する。`scripts/make_audio.py` と GENERATION.md の音声生成手順が関連
+
 設計スペック `2026-07-03-pregenerated-audio-and-content-pool.md` の「実装順序」の続き(フェーズ1・2・実機検証まで完了):
 
 1. **台本の続きを量産**(GENERATION.mdに従う。**ep-3〜5 済み=5/50本、残り45本**。数セッションに分割、1本ごとに`node scripts/validate.mjs`必須)。題材は「10年後に読んでも思考訓練として成立する」実在の出来事/現象に限定。ジャンルの偏りに注意(既出: 社会×1・経済×1・テクノロジー×1・科学×1・国際×1。文化がまだ無い)。重複回避は`content/index.json`のpool台帳と`data/models.json`の`deliveredOn`で管理
@@ -45,4 +50,5 @@
 - 番組の日替わりは `app.js` の `poolKeyForToday()`(dayNum % pool.length)。`app.todayKey` が「本日の放送」の唯一の基準(home.js もこれを参照)
 - 音声メタ `radio.audio`(url/durationSec/lineStartSec)があれば player.js は audioモード、なければ ttsモード。過去のアーカイブ回(2026-07-02 等)は audioなし=speechSynthesis のまま
 - GitHub Pages は公開リポジトリ。個人情報・仮説ログは絶対にリポジトリへ入れない
+- **【暫定】Pages ビルドが停止しやすい(次セッション項目A で恒久対策予定)**。push 後にライブサイトが更新されないときは `gh api -X POST repos/tmurata0612-cell/kaizodo-fm/pages/builds` で手動再ビルド → `gh api .../pages/builds/latest --jq .status` が `built` になるまで確認。content と data/models.json は network-first なので、サーバー更新後はアプリを開き直せば反映される(アプリ本体JSを変えた場合のみ sw.js VERSION も上げる)
 - VOICEVOXクレジット表記(「VOICEVOX:青山龍星」「VOICEVOX:雨晴はう」)は利用規約上の必須条件。アプリから消さない
