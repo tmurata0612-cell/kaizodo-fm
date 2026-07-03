@@ -34,3 +34,4 @@
 - `content/index.json` の `latest` とエピソード追記、`data/models.json` の `deliveredOn` 記入を日次生成で忘れない(GENERATION.md手順の7-8)
 - app.js の `resolveEpisode()` 内 `evCount = 2` — evergreenを増やしたらここも更新
 - GitHub Pages は公開リポジトリ。個人情報・仮説ログは絶対にリポジトリへ入れない
+- バックグラウンド再生はAndroid Chrome前提(Media Session API)。一部Androidメーカー(Xiaomi/Samsung等)のアグレッシブなバッテリー最適化はブラウザ設定を超えてタブを強制終了することがあり、その場合はユーザー側でブラウザ/PWAをバッテリー最適化の対象外に設定する必要がある(設計: `docs/superpowers/specs/2026-07-03-background-playback-design.md`)
