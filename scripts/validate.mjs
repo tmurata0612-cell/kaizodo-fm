@@ -1,5 +1,6 @@
-// 日次エピソードJSONの検証スクリプト。
-// 使い方: node scripts/validate.mjs content/2026-07-02.json [他のファイル...]
+// エピソードJSONの検証スクリプト。
+// 使い方: node scripts/validate.mjs content/ep-1.json [他のファイル...]
+// プール回(content/ep-N.json)と過去のアーカイブ回(日付・evergreen)の両方に対応。
 // すべての生成コンテンツは commit 前にこれを通すこと(GENERATION.md参照)。
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -30,9 +31,16 @@ for (const file of files) {
     continue;
   }
 
+  const poolMatch = file.match(/(ep-\d+)\.json$/);
   const isEvergreen = /evergreen/.test(file);
-  if (!isEvergreen && !/^\d{4}-\d{2}-\d{2}$/.test(ep.date ?? "")) err("date が YYYY-MM-DD 形式でない");
-  if (isEvergreen && ep.date !== "evergreen") err('evergreen回は date を "evergreen" にする');
+  if (poolMatch) {
+    if (ep.id !== poolMatch[1]) err(`id "${ep.id}" がファイル名(${poolMatch[1]})と一致しない`);
+    if ("date" in ep) err("プール回に date フィールドは置かない(id 方式)");
+  } else if (isEvergreen) {
+    if (ep.date !== "evergreen") err('evergreen回は date を "evergreen" にする');
+  } else {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(ep.date ?? "")) err("date が YYYY-MM-DD 形式でない");
+  }
 
   // --- suiri ---
   const s = ep.suiri;
@@ -88,6 +96,24 @@ for (const file of files) {
       }
       if (total < 2200 || total > 4500) err(`台本の総文字数は2200〜4500字(8〜12分想定、現在${total}字)`);
       if (speakers.size < 2) err("台本に2人以上の話者が必要(掛け合い形式)");
+      if (poolMatch && r.script.some(line => /\{\{\w+\}\}/.test(line.text ?? ""))) {
+        err("プール回の台本に変数枠({{listener}}等)は使えない(音声を事前生成するため)");
+      }
+    }
+    // radio.audio(scripts/make_audio.py が書き戻す。プール回は音声付きで公開するのが原則)
+    const a = r.audio;
+    if (a) {
+      if (!/^https:\/\/github\.com\/.+\/releases\/download\/.+\.mp3$/.test(a.url ?? "")) err("radio.audio.url がReleasesのmp3 URLでない");
+      if (!(typeof a.durationSec === "number" && a.durationSec > 0)) err("radio.audio.durationSec が正の数でない");
+      if (!Array.isArray(a.lineStartSec) || a.lineStartSec.length !== (r.script?.length ?? 0)) {
+        err(`radio.audio.lineStartSec の要素数が台本の行数と一致しない(${a.lineStartSec?.length ?? 0} vs ${r.script?.length ?? 0})`);
+      } else {
+        if (a.lineStartSec[0] !== 0) err("radio.audio.lineStartSec は 0 から始める");
+        for (let i = 1; i < a.lineStartSec.length; i++) {
+          if (!(a.lineStartSec[i] > a.lineStartSec[i - 1])) { err(`radio.audio.lineStartSec が単調増加でない(index ${i})`); break; }
+        }
+        if (a.lineStartSec[a.lineStartSec.length - 1] >= a.durationSec) err("lineStartSec の最終値が durationSec 以上");
+      }
     }
   }
 

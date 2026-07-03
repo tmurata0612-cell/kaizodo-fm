@@ -5,3 +5,6 @@ node_modules/
 
 # ローカル設定(セッション許可リスト等。公開リポジトリに含めない)
 .claude/
+
+# 生成音声(GitHub Releasesで配信。gitには入れない)
+audio_out/
