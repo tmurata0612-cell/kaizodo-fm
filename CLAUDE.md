@@ -25,14 +25,16 @@
 - **実装フェーズ1完了**(2026-07-03): `scripts/make_audio.py`(本番パイプライン)、ep-1/ep-2(音声付き・validate通過・Release `audio-v1` にアップロード済み・URL疎通確認済み)、validate.mjs拡張(id方式+radio.audio検証)、変数枠`{{listener}}`/`{{streak}}`は全廃(音声とテキストのズレ防止。GENERATION.mdに明記)
 - **VOICEVOXエンジンはリポジトリ内 `.voicevox/`(git管理外、約2GB)に配置済み**。起動: `.voicevox\run.exe --host 127.0.0.1 --port 50021`(起動に1〜2分)。再取得する場合は `gh release download -R VOICEVOX/voicevox_engine`(このPCはcurl/pipがSSL検証で失敗するためghを使う。pipは`--trusted-host`で回避可。7z展開は7zr.exe)
 - 音声生成の実測: 1話(約47行・6.5〜7分)のCPU合成に3〜5分。mp3は1話2.2〜2.4MB
-- **実装フェーズ2完了**(2026-07-03): アプリをプール方式+audioエンジンに改修。`player.js`=二段構え(`radio.audio`があれば`<audio>`+Media Session、なければ従来speechSynthesis。公開APIは共通)、`app.js`=プールローテーション(`EV_COUNT`廃止、`poolKeyForToday()`=dayNum%pool.length、`app.todayKey`)、`content/index.json`=pool/archive形式、`content/evergreen/`削除(ep-1/ep-2へ編入済み)、VOICEVOXクレジットをradio.js(音声再生時)とsettings.jsに表示、`sw.js` VERSION=v4。**ヘッドレスChrome(390px)で14/14 PASS**(プール解決/audioモード/台本描画/クレジット/行タップseek/速度変更/ミニプレイヤー/tts後方互換)。validate 3本全通過。**※実機バックグラウンド再生は未検証(次タスク)。commit 前**
+- **実装フェーズ2完了**(2026-07-03): アプリをプール方式+audioエンジンに改修。`player.js`=二段構え(`radio.audio`があれば`<audio>`+Media Session、なければ従来speechSynthesis。公開APIは共通)、`app.js`=プールローテーション(`EV_COUNT`廃止、`poolKeyForToday()`=dayNum%pool.length、`app.todayKey`)、`content/index.json`=pool/archive形式、`content/evergreen/`削除(ep-1/ep-2へ編入済み)、VOICEVOXクレジットをradio.js(音声再生時)とsettings.jsに表示、`sw.js` VERSION=v4。**ヘッドレスChrome(390px)で14/14 PASS**(プール解決/audioモード/台本描画/クレジット/行タップseek/速度変更/ミニプレイヤー/tts後方互換)。validate 3本全通過。commit/push 済み(`a729b17`)
+- **実機バックグラウンド再生の確認 成功**(2026-07-03): スマホ実機で画面ロック・アプリ切替・ロック画面コントロール・Bluetooth操作を確認済み。**事前生成音声方式の成否が確定 = 採用でGO**。以降は台本量産フェーズへ
+- **台本量産バッチ①(2026-07-03)**: ep-3(規格戦争/network-effects/テクノロジー)・ep-4(自然渋滞/emergence/科学)・ep-5(資源の呪い/rent-seeking/国際)を生成。**validate 全通過**、index.json pool と models.json deliveredOn 更新済み。**音声は未生成**(=当面は ttsモード再生。バッチがまとまってから make_audio.py で一括生成→Releasesアップロード予定)。プールは現在 **5/50本**、残り45本
 
 ## 次のセッションでやること(この順で)
 
-設計スペック `2026-07-03-pregenerated-audio-and-content-pool.md` の「実装順序」の続き(フェーズ1・2完了済み):
+設計スペック `2026-07-03-pregenerated-audio-and-content-pool.md` の「実装順序」の続き(フェーズ1・2・実機検証まで完了):
 
-1. **実機でバックグラウンド再生を確認**(方式の成否がここで確定。台本量産より先にやる)。GitHub Pages 反映後、スマホ実機で画面ロック・アプリ切替・ロック画面コントロール・Bluetooth操作をテスト
-2. 台本49本のバッチ生成(数セッションに分割)→ 音声一括生成+アップロード
+1. **台本の続きを量産**(GENERATION.mdに従う。**ep-3〜5 済み=5/50本、残り45本**。数セッションに分割、1本ごとに`node scripts/validate.mjs`必須)。題材は「10年後に読んでも思考訓練として成立する」実在の出来事/現象に限定。ジャンルの偏りに注意(既出: 社会×1・経済×1・テクノロジー×1・科学×1・国際×1。文化がまだ無い)。重複回避は`content/index.json`のpool台帳と`data/models.json`の`deliveredOn`で管理
+2. 音声一括生成+アップロード: 各回 `python scripts/make_audio.py ep-N`(要VOICEVOXエンジン起動) → `gh release upload audio-v1 audio_out/ep-N.mp3` → index.jsonのpoolへ追記(ep-3以降ぶんが未処理)
 3. スマホ実機でユーザーフィードバック第2弾を回収
 
 ## 注意点

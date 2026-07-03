@@ -1,7 +1,10 @@
 {
   "pool": [
     { "id": "ep-1", "topic": "行列のできる店の謎", "genre": "社会", "lensIds": ["shinri", "keizai", "system", "media"], "modelId": "social-proof" },
-    { "id": "ep-2", "topic": "なぜ店は隣同士に並ぶのか", "genre": "経済", "lensIds": ["keizai", "system", "shinka", "chiri"], "modelId": "nash-equilibrium" }
+    { "id": "ep-2", "topic": "なぜ店は隣同士に並ぶのか", "genre": "経済", "lensIds": ["keizai", "system", "shinka", "chiri"], "modelId": "nash-equilibrium" },
+    { "id": "ep-3", "topic": "規格はなぜ乱立し一つに収束するのか", "genre": "テクノロジー", "lensIds": ["keizai", "system", "rekishi", "gijutsu"], "modelId": "network-effects" },
+    { "id": "ep-4", "topic": "事故がないのに起きる自然渋滞", "genre": "科学", "lensIds": ["system", "shinri", "chiri", "tokei"], "modelId": "emergence" },
+    { "id": "ep-5", "topic": "資源が豊かな国ほど貧しくなる資源の呪い", "genre": "国際", "lensIds": ["keizai", "kenryoku", "seido", "rekishi"], "modelId": "rent-seeking" }
   ],
   "archive": [
     { "date": "2026-07-02", "topic": "食品値上げ1万品目・5年連続(帝国データバンク調査)", "genre": "経済", "lensIds": ["keizai", "energy", "shinri", "system"], "modelId": "ratchet-effect" }
