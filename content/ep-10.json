@@ -78,7 +78,7 @@
   "radio": {
     "title": "王者はなぜ、次の波に沈むのか",
     "audio": {
-      "url": "https://github.com/tmurata0612-cell/kaizodo-fm/releases/download/audio-v1/ep-10.mp3",
+      "url": "audio/ep-10.mp3",
       "durationSec": 382.67,
       "lineStartSec": [
         0.0,

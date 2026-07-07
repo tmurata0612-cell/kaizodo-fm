@@ -78,7 +78,7 @@
   "radio": {
     "title": "行列は、人気の「結果」ではない",
     "audio": {
-      "url": "https://github.com/tmurata0612-cell/kaizodo-fm/releases/download/audio-v1/ep-1.mp3",
+      "url": "audio/ep-1.mp3",
       "durationSec": 409.06,
       "lineStartSec": [
         0.0,

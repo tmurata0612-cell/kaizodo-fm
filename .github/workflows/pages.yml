@@ -28,6 +28,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 音声(MP3)は git に入れず Release audio-v1 に置いている(リポジトリ肥大化回避)。
+      # デプロイ時にここで audio/ へ取り込み、Pages が同一オリジンの audio/mpeg で配信する。
+      # これにより iOS Safari で再生可能になる(Release 直リンクは application/octet-stream で iOS が拒否)。
+      - name: Fetch audio from Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p audio
+          gh release download audio-v1 --repo "$GITHUB_REPOSITORY" --dir audio --pattern '*.mp3' --clobber
+          echo "取り込んだ音声:" && ls -la audio
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

@@ -79,7 +79,7 @@
   "radio": {
     "title": "レモンが市場に居座る理由",
     "audio": {
-      "url": "https://github.com/tmurata0612-cell/kaizodo-fm/releases/download/audio-v1/ep-7.mp3",
+      "url": "audio/ep-7.mp3",
       "durationSec": 356.65,
       "lineStartSec": [
         0.0,

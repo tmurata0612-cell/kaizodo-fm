@@ -25,7 +25,11 @@ from vv_dict import apply_user_dict
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "audio_out"
 ENGINE = "http://127.0.0.1:50021"
-RELEASE_URL = "https://github.com/tmurata0612-cell/kaizodo-fm/releases/download/audio-v1/{ep}.mp3"
+# radio.audio.url は「同一オリジンの相対パス」で書く。
+# MP3 の実体は Release(audio-v1)に置き、Pages デプロイ時に .github/workflows/pages.yml が
+# `gh release download` で audio/ に取り込んで配信する。GitHub Pages は .mp3 を audio/mpeg で
+# 返すため iOS Safari でも再生できる(Release 直リンクは application/octet-stream で iOS が拒否する)。
+AUDIO_URL = "audio/{ep}.mp3"
 SAMPLE_RATE = 24000
 BIT_RATE = 48
 
@@ -116,7 +120,7 @@ def make_episode(ep_id, style_ids):
     out.write_bytes(mp3)
 
     ep["radio"]["audio"] = {
-        "url": RELEASE_URL.format(ep=ep_id),
+        "url": AUDIO_URL.format(ep=ep_id),
         "durationSec": duration,
         "lineStartSec": line_start,
     }

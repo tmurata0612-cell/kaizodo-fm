@@ -78,7 +78,7 @@
   "radio": {
     "title": "天からの贈り物が、呪いになるとき",
     "audio": {
-      "url": "https://github.com/tmurata0612-cell/kaizodo-fm/releases/download/audio-v1/ep-5.mp3",
+      "url": "audio/ep-5.mp3",
       "durationSec": 362.27,
       "lineStartSec": [
         0.0,

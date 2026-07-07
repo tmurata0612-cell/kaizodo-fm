@@ -103,7 +103,9 @@ for (const file of files) {
     // radio.audio(scripts/make_audio.py が書き戻す。プール回は音声付きで公開するのが原則)
     const a = r.audio;
     if (a) {
-      if (!/^https:\/\/github\.com\/.+\/releases\/download\/.+\.mp3$/.test(a.url ?? "")) err("radio.audio.url がReleasesのmp3 URLでない");
+      // 音声は同一オリジンの相対パス audio/ep-N.mp3(Pagesが audio/mpeg で配信 → iOS Safari で再生可)。
+      // 実体は Release audio-v1 に置き、Pages デプロイ時に workflow が audio/ へ取り込む。
+      if (!/^audio\/.+\.mp3$/.test(a.url ?? "")) err("radio.audio.url が相対パス audio/*.mp3 でない");
       if (!(typeof a.durationSec === "number" && a.durationSec > 0)) err("radio.audio.durationSec が正の数でない");
       if (!Array.isArray(a.lineStartSec) || a.lineStartSec.length !== (r.script?.length ?? 0)) {
         err(`radio.audio.lineStartSec の要素数が台本の行数と一致しない(${a.lineStartSec?.length ?? 0} vs ${r.script?.length ?? 0})`);

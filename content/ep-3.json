@@ -78,7 +78,7 @@
   "radio": {
     "title": "優れた方が勝つとは限らない",
     "audio": {
-      "url": "https://github.com/tmurata0612-cell/kaizodo-fm/releases/download/audio-v1/ep-3.mp3",
+      "url": "audio/ep-3.mp3",
       "durationSec": 370.01,
       "lineStartSec": [
         0.0,

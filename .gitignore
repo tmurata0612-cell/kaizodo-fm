@@ -9,6 +9,8 @@ __pycache__/
 
 # 生成音声(GitHub Releasesで配信。gitには入れない)
 audio_out/
+# Pagesデプロイ時にworkflowがReleaseから取り込む配信用ディレクトリ(gitには入れない)
+audio/
 
 # ローカルのVOICEVOXエンジン一式(約2GB。scripts/make_audio.py が使う)
 .voicevox/

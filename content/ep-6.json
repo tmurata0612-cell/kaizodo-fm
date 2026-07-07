@@ -78,7 +78,7 @@
   "radio": {
     "title": "縁起担ぎは、なぜ消えないのか",
     "audio": {
-      "url": "https://github.com/tmurata0612-cell/kaizodo-fm/releases/download/audio-v1/ep-6.mp3",
+      "url": "audio/ep-6.mp3",
       "durationSec": 358.51,
       "lineStartSec": [
         0.0,

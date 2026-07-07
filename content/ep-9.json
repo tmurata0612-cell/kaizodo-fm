@@ -78,7 +78,7 @@
   "radio": {
     "title": "安全にするほど、危険になる?",
     "audio": {
-      "url": "https://github.com/tmurata0612-cell/kaizodo-fm/releases/download/audio-v1/ep-9.mp3",
+      "url": "audio/ep-9.mp3",
       "durationSec": 350.54,
       "lineStartSec": [
         0.0,

@@ -78,7 +78,7 @@
   "radio": {
     "title": "誰も止めていないのに、止まる",
     "audio": {
-      "url": "https://github.com/tmurata0612-cell/kaizodo-fm/releases/download/audio-v1/ep-4.mp3",
+      "url": "audio/ep-4.mp3",
       "durationSec": 363.14,
       "lineStartSec": [
         0.0,
