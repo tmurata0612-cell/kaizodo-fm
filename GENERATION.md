@@ -16,7 +16,7 @@
 4. `data/lenses.json` からその題材に効くレンズを**3〜5本**選ぶ
 5. 本書のスキーマと文体基準に従い `content/ep-N.json` を書く(N は既存の最大+1)
 6. `node scripts/validate.mjs content/ep-N.json` を実行し、**パスするまで修正**する
-7. **読みを検査する**: VOICEVOXエンジンを起動し `python scripts/check_readings.py ep-N` → `audio_out/readings.md` で「原文 → 読み仮名[アクセント核]」を確認。誤読(同形異音語・固有名詞・数字+助数詞など)があれば `data/voicevox_dict.json` に1語追加する(手順は「音声生成」参照)。**音声を作る前に必ず通す**
+7. **読みを検査する**: VOICEVOXエンジンを起動し `python scripts/check_readings.py ep-N` → `audio_out/readings.md` で「原文 → 読み仮名[アクセント核]」を確認。誤読(同形異音語・固有名詞・数字+助数詞・単漢字の人名化けなど)があれば `data/voicevox_dict.json` に1語追加 →`--word` で直りを確認 →**単漢字エントリは複合語への波及を全話再probeして無回帰確認**(手順は「音声生成」参照)。**音声を作る前に必ず通す**（ワークスペース共通ルール＝ `../_shared/quality-standards.md` §10。TTS系プロジェクト全体の前提要件）
 8. 音声を生成する: `python scripts/make_audio.py ep-N`(mp3生成と `radio.audio` の書き戻し。ユーザー辞書は自動反映される)
 9. `gh release upload audio-v1 audio_out/ep-N.mp3` でアップロードする
 10. `data/models.json` の該当モデルに `deliveredOn`(作成日)を記入する

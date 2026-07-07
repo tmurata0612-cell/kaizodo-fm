@@ -100,6 +100,7 @@ def check_episodes(ep_ids, style_ids):
     lines_out.append("各行: `原文` の下に `→ 読み仮名[アクセント核]`。読みが想定と違う語を探す。")
     lines_out.append("アクセント核 [n]: n番目のモーラでピッチが下がる(0=平板)。")
     lines_out.append("")
+    readings_map = {}
     for ep_id in ep_ids:
         path = ROOT / "content" / f"{ep_id}.json"
         if not path.exists():
@@ -111,6 +112,7 @@ def check_episodes(ep_ids, style_ids):
         for n, line in enumerate(script, 1):
             style = style_ids[line["speaker"]]
             reading = reading_of(line["text"], style)
+            readings_map[f"{ep_id}::L{n}"] = reading
             lines_out.append(f"**L{n} [{line['speaker']}]** {line['text']}")
             lines_out.append(f"→ {reading}")
             lines_out.append("")
@@ -120,6 +122,39 @@ def check_episodes(ep_ids, style_ids):
     out = OUT_DIR / "readings.md"
     out.write_text("\n".join(lines_out) + "\n", encoding="utf-8")
     print(f"→ {out.relative_to(ROOT)} に書き出した({len(ep_ids)}話)")
+    return readings_map
+
+
+# --- 無回帰確認用のベースライン/差分（辞書編集の前後で「変化した読みだけ」を見る。世界の名著と共通の型） ---
+BASELINE = OUT_DIR / "readings.baseline.json"
+
+
+def save_baseline(readings_map):
+    OUT_DIR.mkdir(exist_ok=True)
+    BASELINE.write_text(json.dumps(readings_map, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"→ ベースライン保存: {BASELINE.relative_to(ROOT)}（{len(readings_map)}行）。"
+          f"以後の実行は、この読みからの変化行だけを readings.diff.md に出す")
+
+
+def write_diff(readings_map):
+    """ベースラインがあれば、読みが変化した行だけを readings.diff.md に書く（無回帰確認）。"""
+    if not BASELINE.exists():
+        print("（ベースライン未保存。辞書を編集する前に `--save-baseline` で現状を保存すると、"
+              "以後は変化行だけを readings.diff.md で確認できる＝全文を読み直さずに無回帰確認できる）")
+        return
+    base = json.loads(BASELINE.read_text(encoding="utf-8"))
+    changed = [(k, base[k], v) for k, v in readings_map.items() if k in base and base[k] != v]
+    lines = ["# 読み差分（ベースライン → 現在）", "",
+             "ベースライン保存後に読みが変わった行だけ。辞書編集の無回帰確認に使う"
+             "（狙った語だけが変化していればOK。想定外の行が出たら複合語への波及＝回帰を疑う）。", ""]
+    if not changed:
+        lines.append("**差分なし**。ベースラインから読みは1行も変わっていない。")
+    else:
+        for k, before, after in changed:
+            lines += [f"**{k}**", f"- 旧: {before}", f"- 新: {after}", ""]
+    out = OUT_DIR / "readings.diff.md"
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"→ 変化 {len(changed)}行 を {out.relative_to(ROOT)} に書き出した")
 
 
 def check_words(words, style_ids):
@@ -145,9 +180,16 @@ def main():
             sys.exit("usage: python scripts/check_readings.py --word 語1 語2 ...")
         check_words(words, style_ids)
     else:
+        # `--save-baseline`: 現在の読みを無回帰確認のベースラインとして保存（辞書編集の直前に打つ）
+        save_baseline_flag = "--save-baseline" in args
+        args = [a for a in args if a != "--save-baseline"]
         if args and any(not re.fullmatch(r"ep-\d+", a) for a in args):
-            sys.exit("usage: python scripts/check_readings.py [ep-N ...] | --word 語1 語2 ...")
-        check_episodes(args, style_ids)
+            sys.exit("usage: python scripts/check_readings.py [ep-N ...] [--save-baseline] | --word 語1 語2 ...")
+        readings_map = check_episodes(args, style_ids)
+        if save_baseline_flag:
+            save_baseline(readings_map)
+        else:
+            write_diff(readings_map)  # ベースラインがあれば変化行だけを readings.diff.md に
 
 
 if __name__ == "__main__":
