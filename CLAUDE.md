@@ -8,7 +8,17 @@
 - **構成**: ビルド工程なしの vanilla JS (ES modules)。`js/app.js`が起動と画面切替、`js/store.js`がlocalStorage層、各タブは`js/{suiri,lens,radio,zukan,kiroku,settings,home}.js`
 - **キャラ**: フェイ(MC/fei)とヒナタ(hinata)。`data/characters.json` + GENERATION.mdのキャラバイブル参照
 
-## 現在のステータス (2026-07-03 時点)
+## 現在のステータス (2026-07-08 更新)
+
+**2026-07-08 セッションの成果(2件・デプロイ済み):**
+
+- **iPhone音声再生バグを修正(同一オリジンPages配信へ切替)**: 原因は GitHub Releases 直リンクが `Content-Type: application/octet-stream`＋`attachment` で返り、iOS Safari が音声と認識せず再生拒否していたこと(Android/PCは中身推測で再生でき露見せず。CORSも無くblob回避不可)。修正=MP3の実体はReleasesに置いたまま、Pagesデプロイ時に `.github/workflows/pages.yml` の `Fetch audio from Release` ステップが `gh release download` で `audio/` に取り込み**同一オリジン配信**(Pagesは`.mp3`を`audio/mp3`で返すのでiOS再生可)。`content/ep-1..10.json` の `radio.audio.url` を相対 `audio/ep-N.mp3` に、`sw.js` は`.mp3`/Rangeを素通し(SW横取りがiOS再生を壊すため)v5、make_audio.py/validate.mjs も追随。**HTTPレベルで検証済み(206/audio/mp3/Accept-Ranges)。実機iPhoneでの最終確認だけユーザー待ち**。`audio/` は .gitignore 済み(リポ肥大化なし)
+- **コンテンツ2本化: suiri+lens を summary(まとめ)に統合(commit `a5578b7`)**: 1テーマ内で同じ概念を三重説明していた重複(suiri 4レンズ + lens 解説 + radio)を解消。1テーマ=**ラジオ + まとめ の2本**。まとめ=文章+図解で概念を説明し**他分野への応用**まで示す(世界の名著方式)。新規 `js/matome.js`(hook=超軽量の一文仮説 → 定義/メカニズム/図解/応用/使いどころ・限界/適用クイズ)。図解は **flow/loop/compare の3種を HTML/CSSでレスポンシブ描画**(スマホ縦で崩れない)。`js/suiri.js`・`js/lens.js` 削除(強めの仮説ゲーム=ガイド質問/レンズ予想/自己採点は retire。仮説思考は hook の一文入力に軽量化して存続)。**radioは一切不変=音声再生成不要**。互換維持: 図鑑★(適用クイズ)・ストリーク・「1ヶ月前のあなた」・localStorage。タブ 推理+レンズ→まとめ(sw v6)、home進捗3→2、validate.mjs/GENERATION.md 全面改訂。**全10話 validate通過＋stub DOM描画テスト全話PASS、デプロイ→ライブ反映確認済み**。設計は `docs/superpowers/specs/2026-07-08-summary-page-and-content-consolidation-design.md`
+- **残(このセッションから申し送り)**: ①iPhone実機で音声再生を最終確認 ②まとめページの実機UX確認(図解の見映え・応用の刺さり)。プールは 10/50本(ラジオ音声は既存のまま有効)
+
+---
+
+**以下は 2026-07-03〜04 時点の記録(音声パイプライン・プール移行・読み対策)。上記2本化で suiri/lens スキーマは summary に置換された点に注意:**
 
 完了:
 - コンテンツ基盤(data/models.json 100個、data/lenses.json 16本、characters、validate.mjs、GENERATION.md)
@@ -41,7 +51,8 @@
 
 設計スペック `2026-07-03-pregenerated-audio-and-content-pool.md` の「実装順序」の続き(フェーズ1・2・実機検証まで完了):
 
-1. **台本の続きを量産**(GENERATION.mdに従う。**ep-1〜10 済み=10/50本、残り40本**。数セッションに分割、1本ごとに`node scripts/validate.mjs`必須)。題材は「10年後に読んでも思考訓練として成立する」実在の出来事/現象に限定。ジャンルの偏りに注意(既出: 社会×2・経済×2・テクノロジー×2・科学×2・国際×1・文化×1。**現状バランス良好**。次は国際・文化を厚めに)。重複回避は`content/index.json`のpool台帳と`data/models.json`の`deliveredOn`で管理
+0. **(2026-07-08 追加) 実機確認2件**: ①iPhoneで今日の放送の音声が鳴るか(PWAを再読み込み=SW v6更新後) ②まとめタブの図解・応用の見映え。両方OKなら iOS対応と2本化は完了
+1. **台本の続きを量産**(GENERATION.mdに従う。**ep-1〜10 済み=10/50本、残り40本**。数セッションに分割、1本ごとに`node scripts/validate.mjs`必須)。**2026-07-08以降は新スキーマ=`summary`(まとめ)＋`radio`の2本立て**(旧 suiri/lens は廃止済み)。題材は「10年後に読んでも思考訓練として成立する」実在の出来事/現象に限定。ジャンルの偏りに注意(既出: 社会×2・経済×2・テクノロジー×2・科学×2・国際×1・文化×1。**現状バランス良好**。次は国際・文化を厚めに)。重複回避は`content/index.json`のpool台帳と`data/models.json`の`deliveredOn`で管理
 2. 音声一括生成+アップロード: 各回 `python scripts/make_audio.py ep-N`(要VOICEVOXエンジン起動) → `gh release upload audio-v1 audio_out/ep-N.mp3 --clobber` → index.jsonのpoolへ追記(**ep-1〜10 は処理済み**。ep-11以降ぶんが対象)
 3. スマホ実機でユーザーフィードバック第2弾を回収
 4. **想起トリガーの設計(2026-07-04 自己理解セッションからの申し送り)**: ユーザーの習慣の死因は「やること自体を忘れる」(トリガー欠如死。`../_shared/user-profile.md`「挫折履歴」参照)。**ユーザーは育休中で2026-09-01復帰＝通勤(電車30分)再開が運用本番**。それまでに ①毎朝固定時刻のリマインド手段(PWA通知の可否検証を含む、無料手段を優先) ②起動摩擦の最小化(開いたら1タップで今日の放送再生)を設計・実装する。隙間時間はX・ショート動画の手癖と競合する前提(quality-standards §8)
