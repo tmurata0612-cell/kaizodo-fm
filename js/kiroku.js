@@ -42,10 +42,9 @@ export function renderKiroku(el, app) {
       ${logs.length ? logs.map(([d, v]) => `
         <div class="log-item">
           <div class="d">${d.startsWith("ev-") ? "アーカイブ回" : d.replaceAll("-", ".")}${!d.startsWith("ev-") && v.isEvergreen ? " (アーカイブ回)" : ""}</div>
-          <div><strong>${esc(v.title || "推理")}</strong> — 視点カバー率 ${v.suiri.score}%</div>
-          ${v.suiri.freeText ? `<div class="small">「${esc(v.suiri.freeText)}」</div>` : ""}
-          ${v.suiri.missedTags?.length ? `<div class="small">抜けていた視点: ${v.suiri.missedTags.map(esc).join(" / ")}</div>` : ""}
-        </div>`).join("") : `<p class="small">まだ記録がありません。今日の推理から始めましょう。</p>`}
+          <div><strong>${esc(v.title || "まとめ")}</strong></div>
+          ${v.suiri.freeText ? `<div class="small">あなたの仮説:「${esc(v.suiri.freeText)}」</div>` : `<div class="small">(この日は仮説をスキップ)</div>`}
+        </div>`).join("") : `<p class="small">まだ記録がありません。今日のまとめから始めましょう。</p>`}
     </div>`;
 
   el.querySelector("#review").onclick = () => startReview(el.querySelector("#reviewBox"), app);
@@ -62,7 +61,7 @@ async function startReview(box, app) {
       const res = await fetch(`content/${d}.json`);
       if (!res.ok) continue;
       const ep = await res.json();
-      if (ep?.lens?.miniQuiz) quizzes.push({ date: d, modelId: ep.lens.modelId, quiz: ep.lens.miniQuiz });
+      if (ep?.summary?.quiz) quizzes.push({ date: d, modelId: ep.summary.modelId, quiz: ep.summary.quiz });
     } catch { /* オフライン等はスキップ */ }
   }
   if (!quizzes.length) {

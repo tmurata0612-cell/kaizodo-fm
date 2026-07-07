@@ -7,7 +7,6 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const lensIds = new Set(JSON.parse(readFileSync(join(root, "data/lenses.json"), "utf8")).lenses.map(l => l.id));
 const modelIds = new Set(JSON.parse(readFileSync(join(root, "data/models.json"), "utf8")).models.map(m => m.id));
 const speakerIds = new Set(Object.keys(JSON.parse(readFileSync(join(root, "data/characters.json"), "utf8")).characters));
 
@@ -42,41 +41,54 @@ for (const file of files) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(ep.date ?? "")) err("date が YYYY-MM-DD 形式でない");
   }
 
-  // --- suiri ---
-  const s = ep.suiri;
-  if (!s) err("suiri がない");
+  // --- summary (まとめ: 概念解説 + 図解 + 応用 + 適用クイズ。旧 suiri + lens を統合) ---
+  const DIAGRAM_TYPES = new Set(["flow", "loop", "compare"]);
+  const s = ep.summary;
+  if (!s) err("summary がない");
   else {
-    if (!s.title) err("suiri.title がない");
-    if (!s.event || s.event.length < 100 || s.event.length > 400) err(`suiri.event は100〜400字(現在${s.event?.length ?? 0})`);
-    if (!s.sourceNote) err("suiri.sourceNote がない");
-    if (!Array.isArray(s.guideQuestions) || s.guideQuestions.length < 2 || s.guideQuestions.length > 4) err("suiri.guideQuestions は2〜4問");
-    else for (const [i, g] of s.guideQuestions.entries()) {
-      if (!g.q) err(`guideQuestions[${i}].q がない`);
-      if (!Array.isArray(g.choices) || g.choices.length < 2) err(`guideQuestions[${i}].choices は2つ以上`);
-    }
-    if (!Array.isArray(s.lensAnalyses) || s.lensAnalyses.length < 3 || s.lensAnalyses.length > 5) err("suiri.lensAnalyses は3〜5本");
-    else for (const [i, a] of s.lensAnalyses.entries()) {
-      if (!lensIds.has(a.lensId)) err(`lensAnalyses[${i}].lensId "${a.lensId}" が data/lenses.json に存在しない`);
-      if (!a.analysis || a.analysis.length < 120) err(`lensAnalyses[${i}].analysis が短すぎる(120字以上)`);
-    }
-    if (!s.keyInsight || s.keyInsight.length < 40) err("suiri.keyInsight がないか短すぎる(40字以上)");
-    if (!Array.isArray(s.viewpointTags) || s.viewpointTags.length < 3) err("suiri.viewpointTags は3つ以上");
-  }
+    if (!s.title) err("summary.title がない");
+    if (!s.genre) err("summary.genre がない");
+    if (!modelIds.has(s.modelId)) err(`summary.modelId "${s.modelId}" が data/models.json に存在しない`);
 
-  // --- lens (今日のメンタルモデル) ---
-  const l = ep.lens;
-  if (!l) err("lens がない");
-  else {
-    if (!modelIds.has(l.modelId)) err(`lens.modelId "${l.modelId}" が data/models.json に存在しない`);
-    if (!l.explanation || l.explanation.length < 200) err("lens.explanation が短すぎる(200字以上)");
-    if (!l.example || l.example.length < 80) err("lens.example が短すぎる(80字以上)");
-    const q = l.miniQuiz;
-    if (!q || !q.q || !Array.isArray(q.choices) || q.choices.length < 2) err("lens.miniQuiz が不正");
-    else {
-      if (!Number.isInteger(q.answerIndex) || q.answerIndex < 0 || q.answerIndex >= q.choices.length) err("miniQuiz.answerIndex が範囲外");
-      if (!q.why) err("miniQuiz.why(解説)がない");
+    // hook(超軽量の仮説ステップ)
+    const h = s.hook;
+    if (!h || !h.event || !h.question) err("summary.hook.event / hook.question がない");
+    else if (h.event.length < 60 || h.event.length > 400) err(`summary.hook.event は60〜400字(現在${h.event.length})`);
+
+    if (!s.definition || s.definition.length < 60) err("summary.definition が短すぎる(60字以上)");
+    if (!Array.isArray(s.mechanism) || s.mechanism.length < 2) err("summary.mechanism は2項目以上");
+
+    // diagram(HTML/CSS レスポンシブ描画。type で形が変わる)
+    const d = s.diagram;
+    if (!d) err("summary.diagram がない");
+    else if (!DIAGRAM_TYPES.has(d.type)) err(`summary.diagram.type は ${[...DIAGRAM_TYPES].join("/")} のいずれか(現在 "${d.type}")`);
+    else if (d.type === "compare") {
+      if (!Array.isArray(d.columns) || d.columns.length < 2) err("compare図解は columns を2列以上");
+      else for (const [i, c] of d.columns.entries()) {
+        if (!c.title) err(`diagram.columns[${i}].title がない`);
+        if (!Array.isArray(c.items) || !c.items.length) err(`diagram.columns[${i}].items が空`);
+      }
+    } else { // flow / loop
+      if (!Array.isArray(d.nodes) || d.nodes.length < 2) err("flow/loop図解は nodes を2つ以上");
     }
-    if (!l.connection) err("lens.connection(今日の推理との接続)がない");
+
+    // applications(他分野への応用。この設計の目玉)
+    if (!Array.isArray(s.applications) || s.applications.length < 2) err("summary.applications は2つ以上");
+    else for (const [i, a] of s.applications.entries()) {
+      if (!a.domain) err(`applications[${i}].domain がない`);
+      if (!a.text || a.text.length < 40) err(`applications[${i}].text が短すぎる(40字以上)`);
+    }
+
+    if (!Array.isArray(s.usage) || !s.usage.length) err("summary.usage が空");
+    if (!Array.isArray(s.limits) || !s.limits.length) err("summary.limits が空");
+
+    // 適用クイズ(正解で図鑑の★が育つ)
+    const q = s.quiz;
+    if (!q || !q.q || !Array.isArray(q.choices) || q.choices.length < 2) err("summary.quiz が不正");
+    else {
+      if (!Number.isInteger(q.answerIndex) || q.answerIndex < 0 || q.answerIndex >= q.choices.length) err("quiz.answerIndex が範囲外");
+      if (!q.why) err("quiz.why(解説)がない");
+    }
   }
 
   // --- radio ---

@@ -163,6 +163,69 @@ textarea.input { min-height: 110px; resize: vertical; line-height: 1.7; }
 .key-insight .eyebrow { color: var(--amber); }
 .key-insight p { font-family: var(--serif); font-size: 16.5px; line-height: 2; }
 
+/* ---------- まとめページ ---------- */
+.q-line { font-family: var(--serif); font-size: 17px; line-height: 1.9; margin: 2px 0 12px; }
+.your-hypo { border-left: 2px solid var(--amber-deep); padding-left: 10px; margin: -2px 0 16px; }
+.sec { margin: 20px 0; }
+.sec-h {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.2em; color: var(--amber);
+  margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid var(--line);
+}
+.dot-list { margin: 0; padding-left: 1.1em; }
+.dot-list li { margin-bottom: 8px; line-height: 1.8; }
+.dot-list li::marker { color: var(--amber-deep); }
+
+/* 応用カード(他分野への展開) */
+.app-card {
+  background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--amber-deep);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+}
+.app-card p { margin: 0; }
+.app-domain {
+  display: inline-block; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em;
+  color: var(--amber); border: 1px solid var(--amber-deep); border-radius: 999px;
+  padding: 1px 10px; margin-bottom: 7px;
+}
+
+/* 使いどころ / 効かない条件(狭幅では縦積み) */
+.two-col { display: flex; gap: 10px; flex-wrap: wrap; }
+.mini-card {
+  flex: 1; min-width: 220px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; padding: 12px 14px;
+}
+.mini-card.lim { border-color: rgba(228, 87, 79, 0.28); }
+.mini-h { font-size: 12.5px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.mini-card.lim .mini-h { color: var(--red); }
+.mini-card .dot-list { padding-left: 1em; }
+.mini-card .dot-list li { font-size: 13.5px; margin-bottom: 6px; }
+
+/* 図解(HTML/CSS レスポンシブ) */
+.diagram { margin: 4px 0; }
+.dgm-caption { font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
+.dgm-flow { display: flex; flex-direction: column; align-items: stretch; }
+.dgm-node {
+  background: var(--surface2); border: 1px solid var(--line); border-left: 3px solid var(--amber);
+  border-radius: 10px; padding: 11px 14px; font-size: 14px; line-height: 1.6; text-align: center;
+}
+.dgm-arrow { align-self: center; color: var(--amber); font-size: 18px; line-height: 1; padding: 6px 0; }
+.dgm-loopback {
+  margin-top: 10px; text-align: center; font-size: 12.5px; color: var(--amber);
+  border: 1px dashed var(--amber-deep); border-radius: 999px; padding: 7px 12px;
+  background: var(--amber-soft);
+}
+.dgm-compare { display: flex; gap: 10px; flex-wrap: wrap; }
+.dgm-col {
+  flex: 1; min-width: 200px; background: var(--surface2); border: 1px solid var(--line);
+  border-radius: 12px; padding: 12px 14px;
+}
+.dgm-col-h {
+  font-weight: 700; font-size: 13.5px; color: var(--amber); margin-bottom: 8px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--line);
+}
+.dgm-col ul { margin: 0; padding-left: 1.1em; }
+.dgm-col li { font-size: 13.5px; line-height: 1.7; margin-bottom: 5px; }
+.dgm-col li::marker { color: var(--amber-deep); }
+
 /* ラジオ */
 .radio-controls { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .playbtn {

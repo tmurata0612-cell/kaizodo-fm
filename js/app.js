@@ -2,8 +2,7 @@
 import { store } from "./store.js";
 import { player } from "./player.js";
 import { renderHome } from "./home.js";
-import { renderSuiri } from "./suiri.js";
-import { renderLens } from "./lens.js";
+import { renderMatome } from "./matome.js";
 import { renderRadio } from "./radio.js";
 import { renderZukan } from "./zukan.js";
 import { renderKiroku } from "./kiroku.js";
@@ -45,7 +44,8 @@ const app = {
   },
   episodeDone(key) {
     const log = store.dayLog(key);
-    return !!(log?.suiri?.done && log?.quiz && log?.radioDone);
+    // 2コンテンツ(まとめ + ラジオ)を消費したら完了。適用クイズは任意
+    return !!(log?.suiri?.done && log?.radioDone);
   },
 
   // key: "ep-N"(プール) または "YYYY-MM-DD"(アーカイブ)。どちらも content/ 直下
@@ -73,7 +73,7 @@ function loadIntoPlayer(app) {
     audio: ep.radio.audio, // あれば <audio> エンジン、なければ speechSynthesis
     onComplete: (key) => {
       if (!store.dayLog(key)?.radioDone) {
-        store.setDayLog(key, { radioDone: true, title: ep.suiri?.title });
+        store.setDayLog(key, { radioDone: true, title: ep.summary?.title });
         store.recordActivity();
       }
       if (current === "home" || current === "radio") navigate(current, { replace: true });
@@ -82,7 +82,7 @@ function loadIntoPlayer(app) {
 }
 
 const views = {
-  home: renderHome, suiri: renderSuiri, lens: renderLens, radio: renderRadio,
+  home: renderHome, matome: renderMatome, radio: renderRadio,
   zukan: renderZukan, kiroku: renderKiroku, settings: renderSettings,
 };
 

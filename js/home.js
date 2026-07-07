@@ -6,7 +6,7 @@ export function renderHome(el, app) {
   const log = store.dayLog(epKey) || {};
   const ep = app.episode;
   const streak = store.streak();
-  const doneCount = [log.suiri?.done, log.quiz, log.radioDone].filter(Boolean).length;
+  const doneCount = [log.suiri?.done, log.radioDone].filter(Boolean).length;
 
   const feiLine = pickFeiLine({ streak, doneCount, todayDone: store.todayDone(), isPool: app.episodeMeta.isPool, isToday: app.episodeMeta.isToday, name: app.charName("fei") });
 
@@ -22,16 +22,15 @@ export function renderHome(el, app) {
     ${ep ? `
     <div class="card">
       <div class="eyebrow">TODAY'S PROGRAM</div>
-      <h2>${esc(ep.radio?.title || ep.suiri?.title || "今日の番組")}</h2>
-      <p class="small"><span class="chip">${esc(ep.suiri?.genre || "特集")}</span>
-        レンズ: ${(ep.suiri?.lensAnalyses || []).map(a => app.lensById(a.lensId)?.icon || "").join(" ")}</p>
+      <h2>${esc(ep.radio?.title || ep.summary?.title || "今日の番組")}</h2>
+      <p class="small"><span class="chip">${esc(ep.summary?.genre || "特集")}</span>
+        ${esc(app.modelById(ep.summary?.modelId)?.name || "")}</p>
       <hr class="hr">
       <div class="progress-list">
-        ${progressItem("suiri", "🔍 今日の推理", "約3分", log.suiri?.done)}
-        ${progressItem("lens", "🔭 今日のレンズ", "約2分", !!log.quiz)}
+        ${progressItem("matome", "📝 今日のまとめ", "約4分", log.suiri?.done)}
         ${progressItem("radio", "📻 ラジオを聴く", "約10分", !!log.radioDone)}
       </div>
-      ${doneCount === 3 ? `<hr class="hr"><p class="small">この回はコンプリート! 下のアーカイブからおかわりできます 🎉</p>` : ""}
+      ${doneCount === 2 ? `<hr class="hr"><p class="small">この回はコンプリート! 下のアーカイブからおかわりできます 🎉</p>` : ""}
     </div>` : `
     <div class="card"><h2>番組を取得できませんでした</h2>
       <p class="small">通信環境を確認して再読み込みしてください。オフラインでも一度読み込んだ番組は開けます。</p></div>`}
@@ -104,7 +103,7 @@ function monthAgoCard(app) {
 
 function pickFeiLine({ streak, doneCount, todayDone, isPool, isToday, name }) {
   if (isPool && !isToday) return "アーカイブから一本、おかわりですね。時事に縛られない普遍的な問いです、じっくりどうぞ。";
-  if (doneCount === 3) return "今日の放送は全部聴いてくれたんですね。また明日、いい問いを用意しておきます。";
+  if (doneCount === 2) return "今日の放送は全部聴いてくれたんですね。また明日、いい問いを用意しておきます。";
   if (todayDone) return "続きはお好きな時間にどうぞ。世界は逃げませんから。";
   if (streak >= 30) return `連続${streak}日。もう習慣というより、生き方ですね。今日の題材もなかなかですよ。`;
   if (streak >= 7) return `連続${streak}日目。世界の見え方、少し変わってきた実感はありますか?`;
