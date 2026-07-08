@@ -199,98 +199,17 @@ textarea.input { min-height: 110px; resize: vertical; line-height: 1.7; }
 .mini-card .dot-list { padding-left: 1em; }
 .mini-card .dot-list li { font-size: 13.5px; margin-bottom: 6px; }
 
-/* ========== 図解 v2(構造化スペック → 本物の視覚図解。世界の名著v2方式を移植・深夜FM配色に翻案) ========== */
-.dgm {
-  --panel: var(--surface); --panel-2: var(--surface2); --panel-3: #2a3048;
-  --accent: var(--amber); --accent-2: var(--amber-deep);
-  --ink-soft: #C9C6BC; --ink-faint: var(--muted);
-  --dgm-good: var(--good); --dgm-bad: var(--red); --dgm-warn: var(--amber-deep);
-  --shadow: 0 2px 10px rgba(0,0,0,.35);
-  background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 16px 14px;
+/* ========== 図解: 各回固有のSVG(世界の名著の図解ルール準拠。深夜FM配色) ========== */
+.figbox {
+  background: var(--surface2); border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 10px 10px; overflow-x: auto;
 }
-.dgm-note { font-size: 12.5px; color: var(--ink-faint); line-height: 1.75; margin: 14px 2px 0; padding-top: 12px; border-top: 1px dashed var(--line); }
-.nb-t { font-weight: 600; font-size: 14px; color: var(--ink); display: block; line-height: 1.4; }
-.nb-sub { display: block; font-size: 12px; color: var(--ink-soft); margin-top: 3px; line-height: 1.5; }
-
-/* 列カード(branch/compare共通) */
-.dgm-cols { display: grid; gap: 10px; width: 100%; }
-.dgm-col { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.dgm-col .cb-t { font-family: var(--serif); font-weight: 700; font-size: 14px; color: var(--ink); line-height: 1.35; }
-.dgm-col .cb-sub { font-size: 11.5px; color: var(--ink-faint); }
-.dgm-col ul { list-style: none; margin: 5px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.dgm-col li { position: relative; padding-left: 12px; font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
-.dgm-col li::before { content: ""; position: absolute; left: 2px; top: 9px; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: .65; }
-.dgm-col.t-pos { border-top: 2px solid var(--dgm-good); }
-.dgm-col.t-neg { border-top: 2px solid var(--dgm-bad); }
-.dgm-col.t-warn { border-top: 2px solid var(--dgm-warn); }
-
-/* flow: 縦の流れ */
-.dgm-flow { display: flex; flex-direction: column; align-items: center; }
-.fl-step { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; max-width: 330px;
-  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 12px; padding: 11px 14px; box-shadow: var(--shadow); }
-.fl-arrow { color: var(--accent); font-size: 17px; line-height: 1; margin: 7px 0; font-weight: 700; }
-.fl-axis { font-size: 10.5px; color: var(--ink-faint); letter-spacing: .14em; font-weight: 700; }
-.fl-axis.top { margin-bottom: 8px; } .fl-axis.bottom { margin-top: 8px; }
-/* marks(強調・警告・失敗・処方) */
-.m-warn { border-left-color: var(--dgm-warn) !important; } .m-warn .nb-t { color: var(--dgm-warn); }
-.m-bad { border-left-color: var(--dgm-bad) !important; background: color-mix(in srgb, var(--dgm-bad) 12%, var(--panel)); } .m-bad .nb-t { color: var(--dgm-bad); }
-.m-good { border-left-color: var(--dgm-good) !important; background: color-mix(in srgb, var(--dgm-good) 12%, var(--panel)); } .m-good .nb-t { color: var(--dgm-good); }
-.m-emph { border-left-color: var(--accent-2) !important; }
-
-/* branch: 親→子 */
-.dgm-branch { display: flex; flex-direction: column; align-items: center; }
-.br-root { max-width: 360px; text-align: center; background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; box-shadow: var(--shadow); }
-.br-root .nb-t { font-family: var(--serif); font-weight: 700; font-size: 15px; }
-.br-stem { width: 2px; height: 20px; background: var(--accent); opacity: .5; margin: 3px 0; }
-.dgm-branch .dgm-cols { grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); }
-
-/* compare: 横並び比較(＋関係バッジ／結論／連鎖) */
-.dgm-compare { display: flex; flex-direction: column; align-items: center; }
-.cmp-head { font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--ink-soft); background: var(--panel-3); border: 1px solid var(--line); border-radius: 999px; padding: 5px 15px; margin-bottom: 12px; }
-.dgm-compare .dgm-cols { display: flex; gap: 12px; align-items: stretch; position: relative; }
-.dgm-compare .dgm-col { flex: 1; }
-.cmp-rel { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; min-width: 30px; height: 30px; padding: 0 6px;
-  display: grid; place-items: center; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); font-weight: 700; color: var(--accent); font-size: 14px; }
-.cmp-down { color: var(--accent); font-size: 17px; margin: 9px 0; font-weight: 700; }
-.cmp-outcome { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 400px;
-  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 12px; padding: 11px 15px; box-shadow: var(--shadow); }
-.cmp-cascade { display: flex; flex-direction: column; align-items: center; margin-top: 14px; width: 100%; }
-.casc-step { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 13px; font-size: 12.5px; color: var(--ink-soft); text-align: center; max-width: 300px; }
-
-/* matrix: 2×2 */
-.dgm-matrix { display: flex; flex-direction: column; align-items: center; }
-.mx-collabel { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; color: var(--ink-faint); margin-bottom: 6px; }
-.mx-body { display: flex; gap: 6px; align-items: stretch; width: 100%; max-width: 420px; }
-.mx-rowlabel { writing-mode: vertical-rl; text-orientation: upright; display: grid; place-items: center; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; color: var(--ink-faint); }
-.mx-grid { flex: 1; display: grid; grid-template-columns: 26px 1fr 1fr; gap: 6px; }
-.mx-hd, .mx-rh { display: grid; place-items: center; font-weight: 700; font-size: 13px; color: var(--ink-soft); }
-.mx-cell { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 9px 6px; text-align: center; box-shadow: var(--shadow); }
-.mx-cell .mx-t { font-weight: 700; font-size: 13px; color: var(--ink); display: block; line-height: 1.35; }
-.mx-cell .mx-sub { font-size: 10.5px; color: var(--ink-faint); }
-.mx-cell.t-pos { border-color: var(--dgm-good); background: color-mix(in srgb, var(--dgm-good) 12%, var(--panel)); }
-.mx-cell.t-neg { border-color: var(--dgm-bad); background: color-mix(in srgb, var(--dgm-bad) 12%, var(--panel)); }
-.mx-cell.t-warn { border-color: var(--dgm-warn); background: color-mix(in srgb, var(--dgm-warn) 12%, var(--panel)); }
-
-/* cycle: 循環 */
-.dgm-cycle { display: flex; flex-direction: column; align-items: center; }
-.cyc-node { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; max-width: 300px;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; box-shadow: var(--shadow); }
-.cyc-loop { margin-top: 12px; font-size: 11.5px; color: var(--accent); font-weight: 700;
-  border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--line)); border-radius: 999px; padding: 6px 15px; text-align: center; }
-
-/* pairs: 対応づけ(＋条件分岐) */
-.dgm-pairs { display: flex; flex-direction: column; gap: 14px; }
-.pr-rows { display: flex; flex-direction: column; gap: 10px; }
-.pr-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 9px; align-items: center; }
-.pr-l, .pr-r { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; font-size: 12.5px; color: var(--ink); box-shadow: var(--shadow); text-align: center; line-height: 1.5; }
-.pr-r { border-left: 3px solid var(--accent); }
-.pr-rel { font-size: 10px; color: var(--ink-faint); text-align: center; line-height: 1.15; white-space: nowrap; }
-.pr-rel .pr-arw { display: block; color: var(--accent); font-size: 15px; font-weight: 700; margin-top: 1px; }
-.pr-conds { display: flex; flex-direction: column; gap: 8px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 13px; }
-.pr-cond { display: grid; grid-template-columns: auto auto 1fr; gap: 8px; align-items: center; font-size: 12.5px; line-height: 1.55; }
-.pc-if { font-weight: 700; color: var(--ink); white-space: nowrap; }
-.pc-arw { color: var(--accent); font-weight: 700; }
-.pc-then { color: var(--ink-soft); }
+.figbox svg { display: block; width: 100%; height: auto; }
+.dgm-note {
+  font-size: 12.5px; color: var(--muted); line-height: 1.75;
+  margin: 13px 2px 0; padding-top: 12px; border-top: 1px dashed var(--line);
+}
+.dgm-note b { color: var(--ink); }
 
 /* ラジオ */
 /* 再生・速度・シークは常に画面上部に固定(長い台本をスクロールしても操作できる) */

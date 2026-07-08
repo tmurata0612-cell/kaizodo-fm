@@ -5,6 +5,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { diagrams } from "../js/diagrams.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const modelIds = new Set(JSON.parse(readFileSync(join(root, "data/models.json"), "utf8")).models.map(m => m.id));
@@ -42,8 +43,6 @@ for (const file of files) {
   }
 
   // --- summary (まとめ: 概念解説 + 図解 + 応用 + 適用クイズ。旧 suiri + lens を統合) ---
-  // 図解は構造化スペック(世界の名著v2方式)。type ごとに要素が異なる
-  const DIAGRAM_TYPES = new Set(["flow", "branch", "compare", "matrix", "cycle", "pairs"]);
   const s = ep.summary;
   if (!s) err("summary がない");
   else {
@@ -62,33 +61,10 @@ for (const file of files) {
     if (!s.definition || s.definition.length < 60) err("summary.definition が短すぎる(60字以上)");
     if (!Array.isArray(s.mechanism) || s.mechanism.length < 2) err("summary.mechanism は2項目以上");
 
-    // diagram(構造化スペック。type ごとに必須要素が異なる)
-    const d = s.diagram;
-    const hasT = (o) => o && typeof o.t === "string" && o.t.length > 0;
-    if (!d) err("summary.diagram がない");
-    else if (!DIAGRAM_TYPES.has(d.type)) err(`summary.diagram.type は ${[...DIAGRAM_TYPES].join("/")} のいずれか(現在 "${d.type}")`);
-    else switch (d.type) {
-      case "flow":
-        if (!Array.isArray(d.steps) || d.steps.length < 2 || !d.steps.every(hasT)) err("flow図解は steps(各 .t)を2つ以上");
-        break;
-      case "branch":
-        if (!hasT(d.root)) err("branch図解は root.t が必要");
-        if (!Array.isArray(d.cols) || d.cols.length < 2 || !d.cols.every(hasT)) err("branch図解は cols(各 .t)を2つ以上");
-        break;
-      case "compare":
-        if (!Array.isArray(d.cols) || d.cols.length < 2 || !d.cols.every(hasT)) err("compare図解は cols(各 .t)を2つ以上");
-        break;
-      case "matrix":
-        if (!Array.isArray(d.rows) || d.rows.length !== 2 || !Array.isArray(d.cols) || d.cols.length !== 2) err("matrix図解は rows/cols を各2つ");
-        else if (!Array.isArray(d.cells) || d.cells.length !== 2 || d.cells.some(r => !Array.isArray(r) || r.length !== 2 || !r.every(hasT))) err("matrix図解は cells を2×2(各セル .t)");
-        break;
-      case "cycle":
-        if (!Array.isArray(d.nodes) || d.nodes.length < 2 || !d.nodes.every(hasT)) err("cycle図解は nodes(各 .t)を2つ以上");
-        break;
-      case "pairs":
-        if (!Array.isArray(d.rows) || d.rows.length < 2 || d.rows.some(r => !r.l || !r.r)) err("pairs図解は rows(各 .l/.r)を2つ以上");
-        break;
-    }
+    // diagram: 各回固有のSVGは js/diagrams.js にある(型枠にはめず概念専用の絵を毎回設計)。
+    // ここでは核心テキスト(diagramNote)と、該当epのSVGエントリの存在を検証する。
+    if (!s.diagramNote || s.diagramNote.length < 30) err("summary.diagramNote が短すぎる(30字以上。図解の核心の一言)");
+    if (poolMatch && !diagrams[ep.id]) err(`js/diagrams.js に ${ep.id} の図解SVGがない(各回に固有SVGが必要)`);
 
     // applications(他分野への応用。この設計の目玉)
     if (!Array.isArray(s.applications) || s.applications.length < 2) err("summary.applications は2つ以上");
