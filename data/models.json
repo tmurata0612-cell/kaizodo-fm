@@ -51,7 +51,7 @@
     { "id": "prisoners-dilemma", "name": "囚人のジレンマ", "category": "戦略", "oneLiner": "全員が合理的に裏切ると全員が損をする。協力が難しい理由の最小モデル", "deliveredOn": null },
     { "id": "nash-equilibrium", "name": "ナッシュ均衡", "category": "戦略", "oneLiner": "誰も一人だけ戦略を変えても得しない膠着状態。悪い均衡は「みんな分かってても」続く", "deliveredOn": "2026-07-03" },
     { "id": "zero-sum-positive-sum", "name": "ゼロサムとプラスサム", "category": "戦略", "oneLiner": "奪い合いか、パイを増やせるか。ゲームの種類を見誤ると戦い方をすべて間違える", "deliveredOn": null },
-    { "id": "signaling", "name": "シグナリング", "category": "戦略", "oneLiner": "本心は見せられないから、偽造コストの高い証拠で示す。学歴も高級時計も孔雀の羽", "deliveredOn": null },
+    { "id": "signaling", "name": "シグナリング", "category": "戦略", "oneLiner": "本心は見せられないから、偽造コストの高い証拠で示す。学歴も高級時計も孔雀の羽", "deliveredOn": "2026-07-09" },
     { "id": "credible-commitment", "name": "コミットメント戦略", "category": "戦略", "oneLiner": "退路を断つことが交渉力になる。船を焼いた軍は本気だと伝わる", "deliveredOn": null },
     { "id": "tit-for-tat", "name": "しっぺ返しと協力の進化", "category": "戦略", "oneLiner": "「まず協力、裏切られたら報復、謝れば許す」が繰り返しゲームの最強戦略のひとつ", "deliveredOn": null },
     { "id": "red-queen", "name": "赤の女王仮説", "category": "戦略", "oneLiner": "全力で走り続けてやっと同じ場所。競争相手も進化するから優位は静止しない", "deliveredOn": null },

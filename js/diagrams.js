@@ -206,4 +206,27 @@ export const diagrams = {
     <text x="300" y="180" text-anchor="middle" font-size="11" fill="#E4574F" font-family="var(--serif)" font-weight="700">ここで弱点が</text>
     <text x="300" y="196" text-anchor="middle" font-size="11" fill="#E4574F" font-family="var(--serif)" font-weight="700">強みに変わる</text>
   </svg>`,
+
+  // ep-11 シグナリング — 「コストの壁」を、高い質は軽々越え、低い質は割に合わず引き返す(分離)
+  "ep-11": `<svg viewBox="0 0 520 300" role="img" aria-label="コストの壁を、高い質は飛び越え、低い質は割に合わず引き返す図">
+    <defs>${AHr}<marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7DC98F"/></marker></defs>
+    <text x="260" y="24" text-anchor="middle" font-size="12" fill="#E8A04C" font-family="var(--serif)">シグナルは、本物と偽物を「ふるい分ける」</text>
+    <line x1="40" y1="212" x2="480" y2="212" stroke="#9BA0B4" stroke-width="1" opacity=".25"/>
+    <!-- コストの壁(縦長オブジェクト＝縦書きラベル) -->
+    <rect x="244" y="70" width="34" height="142" rx="4" fill="#E8A04C"/>
+    <text x="261" y="98" text-anchor="middle" font-size="12" fill="#14182a" font-weight="700"><tspan x="261" dy="0">コ</tspan><tspan x="261" dy="15">ス</tspan><tspan x="261" dy="15">ト</tspan><tspan x="261" dy="15">の</tspan><tspan x="261" dy="15">壁</tspan></text>
+    <!-- 高い質：軽々と越える -->
+    <path d="M90,186 C 150,110 215,58 261,58 C 310,58 362,110 388,160" fill="none" stroke="#7DC98F" stroke-width="2.4" marker-end="url(#ahg)"/>
+    <circle cx="90" cy="186" r="7" fill="#7DC98F"/>
+    <text x="88" y="205" text-anchor="middle" font-size="11" fill="#7DC98F">高い質</text>
+    <text x="150" y="70" text-anchor="middle" font-size="10.5" fill="#7DC98F">コストが軽い＝越えられる</text>
+    <!-- 低い質：割に合わず引き返す -->
+    <path d="M150,190 L236,190 C 254,190 254,206 236,206 L184,206" fill="none" stroke="#E4574F" stroke-width="2" marker-end="url(#ahr)"/>
+    <circle cx="150" cy="190" r="6" fill="#E4574F"/>
+    <text x="150" y="234" text-anchor="start" font-size="10.5" fill="#E4574F">低い質＝割に合わず引き返す</text>
+    <!-- 受け手：本物と判定 -->
+    <g stroke="#7DC98F" stroke-width="1.8" fill="none"><circle cx="410" cy="132" r="13"/><path d="M403,132 l5,6 l10,-12"/></g>
+    <text x="410" y="166" text-anchor="middle" font-size="10.5" fill="#7DC98F">受け手：本物と判定</text>
+    <text x="260" y="286" text-anchor="middle" font-size="11" fill="#9BA0B4">質が高い者ほどコストが軽い。だから「越えられた」という事実だけで、本物だと伝わる</text>
+  </svg>`,
 };

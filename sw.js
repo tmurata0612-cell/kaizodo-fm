@@ -1,5 +1,5 @@
 // Service Worker: アプリシェルはキャッシュ優先、コンテンツはネットワーク優先(オフライン時はキャッシュ)
-const VERSION = "kaizodo-v8";
+const VERSION = "kaizodo-v9";
 const SHELL = [
   "./", "index.html", "manifest.json", "icon.svg",
   "css/style.css",

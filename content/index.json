@@ -9,7 +9,8 @@
     { "id": "ep-7", "topic": "良い中古品が市場から消えるレモン市場", "genre": "経済", "lensIds": ["keizai", "shinri", "seido", "media"], "modelId": "information-asymmetry" },
     { "id": "ep-8", "topic": "善意の物資支援が現地産業を苦しめる", "genre": "社会", "lensIds": ["keizai", "system", "rinri", "chiri"], "modelId": "second-order" },
     { "id": "ep-9", "topic": "安全にするほど事故が減らないリスク補償", "genre": "科学", "lensIds": ["shinri", "system", "seido", "tokei"], "modelId": "moral-hazard" },
-    { "id": "ep-10", "topic": "強い企業ほど新技術に負けるイノベのジレンマ", "genre": "テクノロジー", "lensIds": ["keizai", "gijutsu", "shinri", "system"], "modelId": "creative-destruction" }
+    { "id": "ep-10", "topic": "強い企業ほど新技術に負けるイノベのジレンマ", "genre": "テクノロジー", "lensIds": ["keizai", "gijutsu", "shinri", "system"], "modelId": "creative-destruction" },
+    { "id": "ep-11", "topic": "なぜ人は中身より見せることにお金を払うのか(学歴・ブランド・クジャクの羽)", "genre": "文化", "modelId": "signaling" }
   ],
   "archive": [
     { "date": "2026-07-02", "topic": "食品値上げ1万品目・5年連続(帝国データバンク調査)", "genre": "経済", "lensIds": ["keizai", "energy", "shinri", "system"], "modelId": "ratchet-effect" }
