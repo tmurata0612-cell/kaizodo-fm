@@ -5,18 +5,26 @@
 エンジンの /audio_query が返す読み仮名(カタカナ)を抽出し、台本の各行と並べて出力する。
 音声は生成しない(合成前の g2p 結果だけを見る)。lameenc 不要。
 
+読みゲート(--gate)は誤読を機械的に落とす本命。純ロジックは _shared/reading-gate/ に集約
+(世界の名著と共用)。各回は誤読申告 content/ep-N.readings.json が必須(=ゲートの入力)。
+
 使い方:
   1. VOICEVOX エンジンを起動しておく(run.exe --host 127.0.0.1 --port 50021)
-  2. エピソード検査:
+  2. 読みゲート(合成前・MISMATCHがあれば exit 1):
+       python scripts/check_readings.py --gate           # content/ の全 ep
+       python scripts/check_readings.py --gate ep-11      # 指定回だけ
+     → audio_out/gate-report.md に MISMATCH(要修正)/SUSPECT(申告漏れ警告)を書く
+  3. 詳細ダンプ(申告カナを決める時・目視確認):
        python scripts/check_readings.py            # content/ の ep-*.json すべて
        python scripts/check_readings.py ep-3 ep-4   # 指定した回だけ
      → audio_out/readings.md に「行テキスト → 読み仮名」を書き出す(UTF-8)
-  3. 単語プローブ(覚えている誤読例の確認・辞書登録の当たり判定):
+  4. 単語プローブ(覚えている誤読例の確認・辞書登録の当たり判定):
        python scripts/check_readings.py --word 資源 規格 渋滞
      → 各単語の現在の読みを audio_out/word-readings.md に書き出す
 
-読みが想定と違う語が見つかったら、VOICEVOX ユーザー辞書に登録して直す(make_audio.py 側で読み込む想定)。
-コンソールは日本語が化ける環境があるため、結果は必ずファイルへ書く。
+MISMATCHが出たら VOICEVOX ユーザー辞書(data/voicevox_dict.json)に登録するか台本を言い換える。
+申告カナ(readings.json の kana)はVOICEVOXが出す綴りで書く(長音は ー でなくオ/ウのまま。
+readings.md の確認読みをそのまま写す)。コンソールは日本語が化ける環境があるため結果は必ずファイルへ。
 """
 import json
 import re
@@ -25,7 +33,13 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+# 読みゲートの共有コアは _shared/reading-gate/ にある（世界の名著とkaizodo-fmで共用）
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "_shared" / "reading-gate"))
+
 from vv_dict import apply_user_dict
+from reading_core import reading_of, reading_rows, reading_fingerprint
+from reading_gate import find_mismatches, find_suspects
+from readings_manifest import load_manifest
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "audio_out"
@@ -77,19 +91,6 @@ def resolve_style_ids():
     return ids
 
 
-def reading_of(text, style_id):
-    """text を g2p した読み仮名(カタカナ)を返す。アクセント句境界は半角スペース、休止は読点。"""
-    q = api("/audio_query", query={"text": text, "speaker": style_id})
-    parts = []
-    for ap in q["accent_phrases"]:
-        kana = "".join(m["text"] for m in ap["moras"])
-        # アクセント核の位置を [n] で添える(0=平板)。イントネーションの不自然さの手掛かり
-        parts.append(f"{kana}[{ap['accent']}]")
-        if ap.get("pause_mora"):
-            parts.append("、")
-    return " ".join(p for p in parts if p)
-
-
 def check_episodes(ep_ids, style_ids):
     if not ep_ids:
         ep_ids = sorted(
@@ -111,7 +112,7 @@ def check_episodes(ep_ids, style_ids):
         lines_out.append("")
         for n, line in enumerate(script, 1):
             style = style_ids[line["speaker"]]
-            reading = reading_of(line["text"], style)
+            reading = reading_of(line["text"], style, api)
             readings_map[f"{ep_id}::L{n}"] = reading
             lines_out.append(f"**L{n} [{line['speaker']}]** {line['text']}")
             lines_out.append(f"→ {reading}")
@@ -161,7 +162,7 @@ def check_words(words, style_ids):
     style = style_ids["fei"]  # 読みは話者に依らないので代表で1つ
     lines_out = ["# 単語プローブ(現在の読み)", ""]
     for w in words:
-        reading = reading_of(w, style)
+        reading = reading_of(w, style, api)
         lines_out.append(f"- `{w}` → {reading}")
     OUT_DIR.mkdir(exist_ok=True)
     out = OUT_DIR / "word-readings.md"
@@ -169,12 +170,85 @@ def check_words(words, style_ids):
     print(f"→ {out.relative_to(ROOT)} に {len(words)} 語ぶん書き出した")
 
 
+# --- 読みゲート（合成せずに誤読を機械的に落とす。_shared/reading-gate のコアを使う） ---
+
+def _load_dict_words():
+    from vv_dict import DICT_PATH
+    if not DICT_PATH.exists():
+        return []
+    return json.loads(DICT_PATH.read_text(encoding="utf-8")).get("words", [])
+
+
+def _load_traps():
+    """既知の同形異音トラップ表（申告漏れ検出=SUSPECT用）。無ければ空。"""
+    p = ROOT / "data" / "reading_traps.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
+
+
+def _ep_paths(ep_ids):
+    if not ep_ids:
+        ep_ids = sorted(
+            (p.stem for p in (ROOT / "content").glob("ep-*.json")),
+            key=lambda s: int(s.split("-")[1]),
+        )
+    return [ROOT / "content" / f"{ep_id}.json" for ep_id in ep_ids]
+
+
+def run_gate(paths, style_ids, api, dict_words, trap_surfaces):
+    """合成せずに誤読ゲートを実行。未解決MISMATCH（＋マニフェスト未作成/不正）の総数を返す。
+    0 なら合格。副作用として audio_out/gate-report.md を書く。SUSPECTは警告どまり（非ブロック）。"""
+    lines = ["# 読みゲート結果", "",
+             "MISMATCH=申告カナと実読みの不一致（要辞書修正 or 台本言い換え）。"
+             "SUSPECT=申告漏れの疑い（要確認・非ブロック）。", ""]
+    fail = 0
+    for path in paths:
+        ep_id = path.stem
+        if not path.exists():
+            print(f"skip {ep_id}: not found")
+            continue
+        script = json.loads(path.read_text(encoding="utf-8"))["radio"]["script"]
+        rows = reading_rows(script, style_ids, api)
+        fp = reading_fingerprint(rows)
+        lines.append(f"## {ep_id}  (fp={fp[:8]})")
+        try:
+            manifest = load_manifest(path)  # content/ep-N.readings.json
+        except (ValueError, json.JSONDecodeError) as e:
+            fail += 1
+            lines += [f"- ❌ MANIFEST不正: {e}", ""]
+            continue
+        if manifest is None:
+            fail += 1
+            lines += [f"- ❌ MANIFEST未作成（content/{ep_id}.readings.json が必要）", ""]
+            continue
+        mism = find_mismatches(rows, manifest)
+        susp = find_suspects(script, manifest, dict_words, trap_surfaces)
+        fail += len(mism)
+        if not mism and not susp:
+            lines.append("- ✅ 合格（MISMATCH 0 / SUSPECT 0）")
+        for m in mism:
+            lines.append(f"- ❌ MISMATCH `{m['surface']}` 期待={m['kana']} / 実={m['line_reading']}")
+            lines.append(f"      行: {m['line_text']}")
+        for s in susp:
+            lines.append(f"- ⚠ SUSPECT `{s['surface']}`（{s['why']}）")
+        lines.append("")
+    OUT_DIR.mkdir(exist_ok=True)
+    (OUT_DIR / "gate-report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"→ audio_out/gate-report.md（未解決 {fail} 件）")
+    return fail
+
+
 def main():
     args = sys.argv[1:]
     style_ids = resolve_style_ids()
     n = apply_user_dict(api)  # 本番と同じ辞書を反映してから読みを見る
     print(f"ユーザー辞書を反映: {n}語")
-    if args and args[0] == "--word":
+    if args and args[0] == "--gate":
+        rest = args[1:]
+        if any(not re.fullmatch(r"ep-\d+", a) for a in rest):
+            sys.exit("usage: python scripts/check_readings.py --gate [ep-N ...]")
+        fail = run_gate(_ep_paths(rest), style_ids, api, _load_dict_words(), _load_traps())
+        sys.exit(1 if fail else 0)
+    elif args and args[0] == "--word":
         words = args[1:]
         if not words:
             sys.exit("usage: python scripts/check_readings.py --word 語1 語2 ...")

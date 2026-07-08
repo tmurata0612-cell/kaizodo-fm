@@ -125,6 +125,22 @@ for (const file of files) {
     }
   }
 
+  // --- 読みマニフェスト(誤読申告): プール回は content/ep-N.readings.json が必須(読みゲートの入力) ---
+  if (poolMatch) {
+    const manifestRel = file.replace(/\.json$/, ".readings.json");
+    try {
+      const m = JSON.parse(readFileSync(join(root, manifestRel), "utf8"));
+      if (!Array.isArray(m)) err(`${manifestRel} は配列でなければならない`);
+      else for (const [i, e] of m.entries()) {
+        if (!e || typeof e.surface !== "string" || typeof e.kana !== "string")
+          err(`${manifestRel}[${i}] に surface と kana(カタカナ) が必要`);
+      }
+    } catch (e) {
+      if (e.code === "ENOENT") err(`読みマニフェスト ${manifestRel} がない(誤読申告=読みゲートの必須入力。空でも [] を置く)`);
+      else err(`${manifestRel} が読めない: ${e.message}`);
+    }
+  }
+
   if (errors.length) {
     console.error(`NG ${file}`);
     for (const e of errors) console.error(`  - ${e}`);
