@@ -10,7 +10,12 @@
     { "id": "ep-8", "topic": "善意の物資支援が現地産業を苦しめる", "genre": "社会", "lensIds": ["keizai", "system", "rinri", "chiri"], "modelId": "second-order" },
     { "id": "ep-9", "topic": "安全にするほど事故が減らないリスク補償", "genre": "科学", "lensIds": ["shinri", "system", "seido", "tokei"], "modelId": "moral-hazard" },
     { "id": "ep-10", "topic": "強い企業ほど新技術に負けるイノベのジレンマ", "genre": "テクノロジー", "lensIds": ["keizai", "gijutsu", "shinri", "system"], "modelId": "creative-destruction" },
-    { "id": "ep-11", "topic": "なぜ人は中身より見せることにお金を払うのか(学歴・ブランド・クジャクの羽)", "genre": "文化", "modelId": "signaling" }
+    { "id": "ep-11", "topic": "なぜ人は中身より見せることにお金を払うのか(学歴・ブランド・クジャクの羽)", "genre": "文化", "modelId": "signaling" },
+    { "id": "ep-12", "topic": "なぜ何でも作れる豊かな国が輸入するのか(比較優位)", "genre": "国際", "modelId": "comparative-advantage" },
+    { "id": "ep-13", "topic": "共有の漁場の魚が獲り尽くされる(コモンズの悲劇)", "genre": "国際", "modelId": "tragedy-of-commons" },
+    { "id": "ep-14", "topic": "盤石な体制・大流行が突然崩れる(選好の偽装)", "genre": "社会", "modelId": "preference-falsification" },
+    { "id": "ep-15", "topic": "使いにくいQWERTYがなぜ標準であり続けるのか(経路依存性)", "genre": "テクノロジー", "modelId": "path-dependence" },
+    { "id": "ep-16", "topic": "帰還した爆撃機の弾痕に装甲を足すな(生存者バイアス)", "genre": "科学", "modelId": "survivorship-bias" }
   ],
   "archive": [
     { "date": "2026-07-02", "topic": "食品値上げ1万品目・5年連続(帝国データバンク調査)", "genre": "経済", "lensIds": ["keizai", "energy", "shinri", "system"], "modelId": "ratchet-effect" }

@@ -229,4 +229,112 @@ export const diagrams = {
     <text x="410" y="166" text-anchor="middle" font-size="10.5" fill="#7DC98F">受け手：本物と判定</text>
     <text x="260" y="286" text-anchor="middle" font-size="11" fill="#9BA0B4">質が高い者ほどコストが軽い。だから「越えられた」という事実だけで、本物だと伝わる</text>
   </svg>`,
+
+  // ep-12 比較優位 — 同じ資源でも「特化＋交換」で総生産(山の高さ)が増える
+  "ep-12": `<svg viewBox="0 0 520 300" role="img" aria-label="各自で全部作る場合より、得意に特化して交換した方が、総生産の山が高くなる図">
+    <defs>${AH}</defs>
+    <text x="260" y="22" text-anchor="middle" font-size="12" fill="#E8A04C" font-family="var(--serif)">同じ資源でも、「得意に絞って交換」で総量が増える</text>
+    <rect x="300" y="34" width="12" height="9" fill="#E8A04C"/><text x="318" y="42" font-size="10" fill="#9BA0B4">パン</text>
+    <rect x="366" y="34" width="12" height="9" fill="#7DC98F"/><text x="384" y="42" font-size="10" fill="#9BA0B4">魚</text>
+    <line x1="40" y1="210" x2="480" y2="210" stroke="#9BA0B4" stroke-width="1.2" opacity=".45"/>
+    <!-- ① 各自で全部作る（総量=8） -->
+    <g>
+      <rect x="116" y="200" width="40" height="10" fill="#E8A04C"/><rect x="116" y="188" width="40" height="10" fill="#7DC98F"/><rect x="116" y="176" width="40" height="10" fill="#E8A04C"/><rect x="116" y="164" width="40" height="10" fill="#7DC98F"/><rect x="116" y="152" width="40" height="10" fill="#E8A04C"/><rect x="116" y="140" width="40" height="10" fill="#7DC98F"/><rect x="116" y="128" width="40" height="10" fill="#E8A04C"/><rect x="116" y="116" width="40" height="10" fill="#7DC98F"/>
+    </g>
+    <text x="136" y="228" text-anchor="middle" font-size="11" fill="#EAE7DC">① 各自で全部作る</text>
+    <text x="136" y="244" text-anchor="middle" font-size="10" fill="#9BA0B4">(半々に手を出す)</text>
+    <!-- ② 特化して交換（総量=12） -->
+    <g>
+      <rect x="352" y="200" width="40" height="10" fill="#E8A04C"/><rect x="352" y="188" width="40" height="10" fill="#7DC98F"/><rect x="352" y="176" width="40" height="10" fill="#E8A04C"/><rect x="352" y="164" width="40" height="10" fill="#7DC98F"/><rect x="352" y="152" width="40" height="10" fill="#E8A04C"/><rect x="352" y="140" width="40" height="10" fill="#7DC98F"/><rect x="352" y="128" width="40" height="10" fill="#E8A04C"/><rect x="352" y="116" width="40" height="10" fill="#7DC98F"/><rect x="352" y="104" width="40" height="10" fill="#E8A04C"/><rect x="352" y="92" width="40" height="10" fill="#7DC98F"/><rect x="352" y="80" width="40" height="10" fill="#E8A04C"/><rect x="352" y="68" width="40" height="10" fill="#7DC98F"/>
+    </g>
+    <text x="372" y="228" text-anchor="middle" font-size="11" fill="#EAE7DC">② 得意に特化＋交換</text>
+    <text x="372" y="244" text-anchor="middle" font-size="10" fill="#9BA0B4">A=パン / B=魚 ⇄</text>
+    <!-- 総量が増える矢印 -->
+    <path d="M162,120 C 240,86 300,80 344,74" fill="none" stroke="#E8A04C" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+    <text x="256" y="66" text-anchor="middle" font-size="11" fill="#E8A04C">総量が増える</text>
+    <text x="260" y="284" text-anchor="middle" font-size="11" fill="#9BA0B4">決め手は「速さ」でなく「何を諦めるか」＝機会費用。得意に絞るほど無駄が消える</text>
+  </svg>`,
+
+  // ep-13 コモンズの悲劇 — 共有の海。各自が魚を引き出す(得はまるごと)、資源は静かに縮む(損はみんなに薄く)
+  "ep-13": `<svg viewBox="0 0 520 300" role="img" aria-label="共有の海から各漁師が魚を引き出し、資源が元の水準から縮んでいく図">
+    <defs>${AH}</defs>
+    <text x="260" y="22" text-anchor="middle" font-size="12" fill="#E8A04C" font-family="var(--serif)">得は独り占め、損はみんなで薄く分ける</text>
+    <text x="250" y="92" text-anchor="middle" font-size="10" fill="#E4574F">─ もとの資源量 ─</text>
+    <ellipse cx="250" cy="165" rx="118" ry="66" fill="none" stroke="#E4574F" stroke-width="1.3" stroke-dasharray="6 5" opacity=".8"/>
+    <ellipse cx="250" cy="172" rx="78" ry="42" fill="rgba(125,201,143,.18)" stroke="#7DC98F" stroke-width="1.6"/>
+    <text x="250" y="150" text-anchor="middle" font-size="11" fill="#EAE7DC" font-family="var(--serif)">みんなの海</text>
+    <g fill="#7DC98F"><ellipse cx="214" cy="178" rx="10" ry="5"/><path d="M224,178 l8,-4 v8 z"/><ellipse cx="262" cy="188" rx="10" ry="5"/><path d="M272,188 l8,-4 v8 z"/><ellipse cx="292" cy="172" rx="9" ry="4.5"/><path d="M301,172 l7,-4 v8 z"/></g>
+    <text x="250" y="224" text-anchor="middle" font-size="10" fill="#E4574F">資源は静かに減る（損はみんなに薄く）</text>
+    <!-- 4人の漁師と「引き出す」矢印(得はまるごと自分) -->
+    <g fill="#E8A04C"><circle cx="52" cy="96" r="6"/><circle cx="448" cy="96" r="6"/><circle cx="52" cy="244" r="6"/><circle cx="448" cy="244" r="6"/></g>
+    <text x="52" y="82" text-anchor="middle" font-size="10" fill="#9BA0B4">漁師</text>
+    <text x="448" y="82" text-anchor="middle" font-size="10" fill="#9BA0B4">漁師</text>
+    <text x="52" y="264" text-anchor="middle" font-size="10" fill="#9BA0B4">漁師</text>
+    <text x="448" y="264" text-anchor="middle" font-size="10" fill="#9BA0B4">漁師</text>
+    <g stroke="#E8A04C" stroke-width="1.7" fill="none">
+      <path d="M186,148 C 140,120 100,110 66,102" marker-end="url(#ah)"/>
+      <path d="M314,148 C 360,120 400,110 434,102" marker-end="url(#ah)"/>
+      <path d="M186,196 C 140,224 100,234 66,238" marker-end="url(#ah)"/>
+      <path d="M314,196 C 360,224 400,234 434,238" marker-end="url(#ah)"/>
+    </g>
+    <text x="128" y="116" text-anchor="middle" font-size="10" fill="#E8A04C">得＝まるごと自分</text>
+    <text x="260" y="286" text-anchor="middle" font-size="11" fill="#9BA0B4">一人ひとりは合理的なのに、全員で自分の首を絞める。持ち主がいない資源は守られない</text>
+  </svg>`,
+
+  // ep-14 選好の偽装 — 水面の上は全員「賛成」、下の本音は割れている。たまった本音が水面を押し上げる
+  "ep-14": `<svg viewBox="0 0 520 300" role="img" aria-label="水面の上では全員が賛成に見えるが、水面下の本音は反対が多く、押し上げて噴き出そうとする図">
+    <defs>${AHr}</defs>
+    <text x="260" y="20" text-anchor="middle" font-size="12" fill="#E8A04C" font-family="var(--serif)">表は全員「賛成」、裏の本音は割れている</text>
+    <text x="250" y="42" text-anchor="middle" font-size="10.5" fill="#E8A04C">見える世論（表向き）</text>
+    <g fill="#9BA0B4"><circle cx="80" cy="60" r="7"/><circle cx="165" cy="60" r="7"/><circle cx="250" cy="60" r="7"/><circle cx="335" cy="60" r="7"/><circle cx="420" cy="60" r="7"/></g>
+    <g fill="#E8A04C"><rect x="56" y="72" width="48" height="20" rx="10"/><rect x="141" y="72" width="48" height="20" rx="10"/><rect x="226" y="72" width="48" height="20" rx="10"/><rect x="311" y="72" width="48" height="20" rx="10"/><rect x="396" y="72" width="48" height="20" rx="10"/></g>
+    <g fill="#14182a" font-size="11" text-anchor="middle" font-weight="700"><text x="80" y="86">賛成</text><text x="165" y="86">賛成</text><text x="250" y="86">賛成</text><text x="335" y="86">賛成</text><text x="420" y="86">賛成</text></g>
+    <line x1="24" y1="140" x2="496" y2="140" stroke="#9BA0B4" stroke-width="1.4" stroke-dasharray="8 5" opacity=".7"/>
+    <text x="492" y="135" text-anchor="end" font-size="9" fill="#9BA0B4">水面</text>
+    <g stroke="#E4574F" stroke-width="1.8"><line x1="80" y1="166" x2="80" y2="145" marker-end="url(#ahr)"/><line x1="165" y1="166" x2="165" y2="145" marker-end="url(#ahr)"/><line x1="335" y1="166" x2="335" y2="145" marker-end="url(#ahr)"/></g>
+    <g><circle cx="80" cy="182" r="14" fill="#E4574F"/><circle cx="165" cy="182" r="14" fill="#E4574F"/><circle cx="250" cy="182" r="14" fill="#7DC98F"/><circle cx="335" cy="182" r="14" fill="#E4574F"/><circle cx="420" cy="182" r="14" fill="#7DC98F"/></g>
+    <g fill="#14182a" font-size="14" text-anchor="middle" font-weight="700"><text x="80" y="187">×</text><text x="165" y="187">×</text><text x="250" y="187">○</text><text x="335" y="187">×</text><text x="420" y="187">○</text></g>
+    <text x="250" y="228" text-anchor="middle" font-size="10.5" fill="#E4574F">たまった本音（×＝反対）が、水面を押し上げる</text>
+    <text x="250" y="262" text-anchor="middle" font-size="10.5" fill="#E8A04C">隠れた本音（心の中）</text>
+    <text x="260" y="286" text-anchor="middle" font-size="11" fill="#9BA0B4">全員一致に見えても中身は空洞かも。閾値を越えると、隠れた本音が一斉に噴き出す</text>
+  </svg>`,
+
+  // ep-15 経路依存性 — 地形の谷。今の標準は「高い谷」に閉じ込められ、より良い「低い谷」へは壁で移れない(ロックイン)
+  "ep-15": `<svg viewBox="0 0 520 300" role="img" aria-label="二つの谷の地形。ボールは高い方の谷に閉じ込められ、より低い(良い)谷へは尾根の壁で移れない図">
+    <defs>${AH}${AHr}</defs>
+    <text x="260" y="22" text-anchor="middle" font-size="12" fill="#E8A04C" font-family="var(--serif)">今いる谷が「最適」とは限らない</text>
+    <path d="M24,130 C 78,130 115,196 150,196 C 200,196 224,110 262,110 C 302,110 342,238 378,238 C 420,238 462,192 496,184 L496,285 L24,285 Z" fill="rgba(155,160,180,.10)" stroke="#9BA0B4" stroke-width="1.6"/>
+    <line x1="150" y1="196" x2="470" y2="196" stroke="#C9C6BC" stroke-width="1" stroke-dasharray="4 4" opacity=".4"/>
+    <text x="60" y="84" text-anchor="middle" font-size="10" fill="#E8A04C">初期の偶然</text>
+    <path d="M58,92 C 70,108 90,116 108,124" fill="none" stroke="#E8A04C" stroke-width="1.6" marker-end="url(#ah)"/>
+    <circle cx="150" cy="185" r="11" fill="#E8A04C"/>
+    <text x="150" y="168" text-anchor="middle" font-size="10" fill="#EAE7DC">今の標準</text>
+    <text x="262" y="96" text-anchor="middle" font-size="10.5" fill="#E4574F">切り替えの壁</text>
+    <path d="M168,176 C 205,150 232,132 250,122" fill="none" stroke="#E4574F" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#ahr)"/>
+    <text x="278" y="118" font-size="13" fill="#E4574F" font-weight="700">×</text>
+    <circle cx="378" cy="227" r="11" fill="none" stroke="#7DC98F" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text x="378" y="262" text-anchor="middle" font-size="10" fill="#7DC98F">より良い道（普及せず）</text>
+    <text x="452" y="188" text-anchor="middle" font-size="9" fill="#C9C6BC">低い＝良い</text>
+    <text x="260" y="284" text-anchor="middle" font-size="11" fill="#9BA0B4">初期の偶然が溝を深める。より良い道が見えても壁を越えられない＝ロックイン</text>
+  </svg>`,
+
+  // ep-16 生存者バイアス — 帰還した爆撃機。弾痕は「撃たれても飛べた場所」、穴の無いエンジン/操縦席こそ致命部位
+  "ep-16": `<svg viewBox="0 0 520 300" role="img" aria-label="帰還した爆撃機の上面図。弾痕は翼と胴体後方に集中し、穴の無いエンジンと操縦席を補強すべきと示す図">
+    <defs>${AH}${AHr}</defs>
+    <text x="260" y="20" text-anchor="middle" font-size="12" fill="#E8A04C" font-family="var(--serif)">帰還機の「弾痕」が語るのは、生存者だけ</text>
+    <!-- 機体(上面図) -->
+    <ellipse cx="260" cy="150" rx="145" ry="16" fill="#2A3048" stroke="#9BA0B4" stroke-width="1.3"/>
+    <ellipse cx="260" cy="232" rx="52" ry="11" fill="#2A3048" stroke="#9BA0B4" stroke-width="1.3"/>
+    <path d="M242,90 Q260,58 278,90 L272,250 Q260,262 248,250 Z" fill="#2A3048" stroke="#9BA0B4" stroke-width="1.3"/>
+    <!-- 弾痕(帰還機に集中＝撃たれても飛べた場所) -->
+    <g fill="#E4574F"><circle cx="150" cy="150" r="4"/><circle cx="178" cy="144" r="4"/><circle cx="126" cy="152" r="4"/><circle cx="345" cy="150" r="4"/><circle cx="372" cy="145" r="4"/><circle cx="398" cy="150" r="4"/><circle cx="260" cy="196" r="4"/><circle cx="252" cy="216" r="4"/><circle cx="268" cy="214" r="4"/><circle cx="236" cy="232" r="4"/><circle cx="285" cy="232" r="4"/></g>
+    <!-- 穴が無い＝致命部位(エンジン・操縦席) -->
+    <g fill="none" stroke="#E8A04C" stroke-width="1.8" stroke-dasharray="4 3"><circle cx="190" cy="150" r="13"/><circle cx="330" cy="150" r="13"/><circle cx="260" cy="98" r="15"/></g>
+    <text x="66" y="46" text-anchor="start" font-size="10.5" fill="#E4574F">● 弾痕（帰還機に集中）</text>
+    <path d="M96,52 C 120,90 135,120 150,142" fill="none" stroke="#E4574F" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#ahr)"/>
+    <text x="454" y="46" text-anchor="end" font-size="10.5" fill="#E8A04C">○ 穴が無い＝致命部位</text>
+    <text x="454" y="60" text-anchor="end" font-size="10.5" fill="#E8A04C">→ ここを補強せよ</text>
+    <path d="M418,66 C 390,96 360,120 344,140" fill="none" stroke="#E8A04C" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+    <text x="260" y="284" text-anchor="middle" font-size="11" fill="#9BA0B4">見えるのは「帰ってきた機」だけ。データに“無い”ものこそ、一番大事な情報</text>
+  </svg>`,
 };

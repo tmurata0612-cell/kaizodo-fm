@@ -5,6 +5,10 @@
     { "surface": "一言", "pronunciation": "ヒトコト", "accent_type": 2, "word_type": "COMMON_NOUN", "priority": 10, "reason": "『中で一言』等の文脈で『イチゲン』に誤読される" },
     { "surface": "この前", "pronunciation": "コノマエ", "accent_type": 0, "word_type": "COMMON_NOUN", "priority": 10, "reason": "『この前スマホ』等で 前 が『ゼン』に誤読される" },
     { "surface": "新店", "pronunciation": "シンテン", "accent_type": 0, "word_type": "COMMON_NOUN", "priority": 10, "reason": "既定は『シンミセ』。番組では『シンテン』を採用" },
-    { "surface": "レントシーキング", "pronunciation": "レントシーキング", "accent_type": 4, "word_type": "COMMON_NOUN", "priority": 8, "reason": "既定では『レン・トシイキング』に分割される" }
+    { "surface": "レントシーキング", "pronunciation": "レントシーキング", "accent_type": 4, "word_type": "COMMON_NOUN", "priority": 8, "reason": "既定では『レン・トシイキング』に分割される" },
+    { "surface": "特化", "pronunciation": "トッカ", "accent_type": 0, "word_type": "COMMON_NOUN", "priority": 8, "reason": "既定では『トクカ』に誤分割される(正: とっか)" },
+    { "surface": "持ち主", "pronunciation": "モチヌシ", "accent_type": 3, "word_type": "COMMON_NOUN", "priority": 10, "reason": "既定では『モチシュ』に誤読される(正: もちぬし)。文中の結合誤分割に勝たせるため priority 10" },
+    { "surface": "後知恵", "pronunciation": "アトヂエ", "accent_type": 2, "word_type": "COMMON_NOUN", "priority": 10, "reason": "既定では『アト・チエ』に分割され連濁も落ちる(正: あとぢえ)" },
+    { "surface": "実際", "pronunciation": "ジッサイ", "accent_type": 0, "word_type": "COMMON_NOUN", "priority": 10, "reason": "既定では『ジツギワ』に誤読される(正: じっさい)" }
   ]
 }
