@@ -62,15 +62,18 @@
 - **limits**: 効かない条件・限界(1〜2個)。**モデルの万能視は番組の使命に反する**ので必ず書く
 - **quiz**: 適用クイズ(正解で図鑑の★が育つ)。暗記でなく**適用問題**。身近な状況で「このモデルで読むとどうなる?」を問い、ひっかけには「ありがちな誤読」を置く
 
-### 図解(diagram)のtype
+### 図解(diagram)の作り方 — 構造化スペックDSL(世界の名著v2方式)
 
-狭いスマホ縦画面で崩れないよう、`js/matome.js` が縦積み中心にレンダリングする。次の3種から選ぶ:
+図解は**構造化スペック**で書き、`js/matome.js` の `diagramHTML()` が本物の視覚図解にレンダリングする(狭いスマホ縦でも崩れない)。**プレーンなノードの羅列にせず、tone(色)・sub(補足)・note(核心)・mark(強調)まで使って"読ませる一枚"にする**こと。概念に最も合う type を選ぶ:
 
-- **flow**: `nodes`(2つ以上)を下向き矢印で連結。因果・手順・段階の説明に。例: 渋滞の発生、資源の呪いの連鎖
-- **loop**: flow に「最初へ戻る」自己増幅を足す。正のフィードバック・自己強化ループに。例: 行列、ネットワーク効果
-- **compare**: `columns`(2〜3列、各 `{title, items[]}`)で対比。before/after、非対称、「数えるべき/実際に見る」など。例: レモン市場の情報差、確証バイアスの4マス
+- **flow**: `steps[]`(各 `{t, sub?, mark?}`)を下向き矢印で連結。`axis:{top,bottom}` で「何から何へ」の軸を添える。因果・段階に。例: 渋滞、レモン市場の逆選択
+- **cycle**: `nodes[]` の循環＋`loop`(戻りの一言)。自己強化・恒常性ループに。例: 行列、ネットワーク効果、リスク補償
+- **branch**: `root{t}` から `cols[]`(各 `{t, sub?, tone?, items[]}`)へ分岐。1つの起点が2ルートに分かれる時。例: 資源の呪い(奪い合い/価値づくり)
+- **compare**: `cols[]` を横並び対比＋`head`(見出し)・`rel`(関係バッジ)・`outcome{t,sub}`(結論ノード)・`cascade[]`(結論後の連鎖)。非対称・before/after に。例: ナッシュ均衡、イノベのジレンマ
+- **matrix**: 2×2。`rowLabel/colLabel`・`rows[2]/cols[2]`・`cells[2][2]`(各 `{t, sub?, tone?}`)。場合分けに。例: 確証バイアスの4マス(担ぐ/担がない × 成功/失敗)
+- **pairs**: `rows[]`(各 `{l, rel?, r}`)の対応づけ＋`conds[]`(各 `{if, then}`)の条件分岐。写像・「AならB」に。例: 二次効果(一次/二次)
 
-`caption` は図の一言解説(何を示す図か)。
+共通: `note` に**その図の核心**を1〜2文(`**強調**` 可)。ノード/列の `tone` は `pos`(緑)/`neg`(赤)/`warn`(橙)、`mark` は `emph`/`good`/`bad`/`warn`。文字列は `**…**` で太字にできる。
 
 ## ラジオ台本の基準
 
@@ -134,10 +137,9 @@
     "definition": "概念の一言定義。60字以上",
     "mechanism": ["なぜそうなるかを2〜4個の箇条書きで"],
     "diagram": {
-      "type": "flow | loop | compare",
-      "caption": "図の一言解説",
-      "nodes": ["flow/loop のとき: ノードを2つ以上"],
-      "columns": [{ "title": "compare のとき: 列見出し", "items": ["…"] }]
+      "type": "flow | cycle | branch | compare | matrix | pairs",
+      "note": "図の核心を1〜2文(**強調**可)",
+      "//": "type ごとに要素が異なる。flow:steps[]+axis / cycle:nodes[]+loop / branch:root+cols[] / compare:cols[]+head/rel/outcome/cascade / matrix:rows/cols/cells / pairs:rows[]+conds[]。詳細は上記DSL節"
     },
     "applications": [
       { "domain": "分野名", "text": "その概念が他分野でどう応用されるか。40字以上" }
