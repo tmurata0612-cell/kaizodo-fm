@@ -1,4 +1,4 @@
-// 図鑑: メンタルモデルのコレクション。タップで詳細画面に遷移(戻るボタンつき)
+// 図鑑: レンズ(=その回のメンタルモデル)のコレクション。タップで詳細画面に遷移(戻るボタンつき)
 import { esc } from "./home.js";
 
 export function renderZukan(el, app) {
@@ -14,8 +14,8 @@ function renderGrid(el, app) {
 
   el.innerHTML = `
     <h1 class="view-title">レンズ図鑑</h1>
-    <p class="small">開放 <span class="zukan-count">${opened.length} / ${models.length}</span>
-      — 毎日1つずつ、世界を見る道具が増えていきます(リスト自体も成長します)</p>
+    <p class="small">レンズ=世界を見る道具(その回のメンタルモデル)。1回に1つ、ここに貯まります。
+      開放 <span class="zukan-count">${opened.length} / ${models.length}</span>(リスト自体も成長します)</p>
     ${cats.map(cat => {
       const items = models.filter(m => m.category === cat);
       return `<div class="zukan-cat">${esc(cat)} (${items.filter(isOpen).length}/${items.length})</div>

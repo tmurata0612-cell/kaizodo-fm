@@ -50,10 +50,13 @@ for (const file of files) {
     if (!s.genre) err("summary.genre がない");
     if (!modelIds.has(s.modelId)) err(`summary.modelId "${s.modelId}" が data/models.json に存在しない`);
 
-    // hook(超軽量の仮説ステップ)
+    // hook(超軽量の仮説ステップ。選択式)
     const h = s.hook;
     if (!h || !h.event || !h.question) err("summary.hook.event / hook.question がない");
-    else if (h.event.length < 60 || h.event.length > 400) err(`summary.hook.event は60〜400字(現在${h.event.length})`);
+    else {
+      if (h.event.length < 60 || h.event.length > 400) err(`summary.hook.event は60〜400字(現在${h.event.length})`);
+      if (!Array.isArray(h.choices) || h.choices.length < 2 || h.choices.length > 4) err("summary.hook.choices は2〜4個(選択式の仮説)");
+    }
 
     if (!s.definition || s.definition.length < 60) err("summary.definition が短すぎる(60字以上)");
     if (!Array.isArray(s.mechanism) || s.mechanism.length < 2) err("summary.mechanism は2項目以上");

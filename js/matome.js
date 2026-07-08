@@ -14,23 +14,29 @@ export function renderMatome(el, app) {
   renderHook(el, app, s, epKey);
 }
 
-// --- 超軽量の仮説ステップ(出来事 + 問い + 一文入力。スキップ可) ---
+// --- 超軽量の仮説ステップ(出来事 + 問い + 選択式の仮説。スキップ可) ---
 function renderHook(el, app, s, epKey) {
-  const draft = (renderMatome._draft?.epKey === epKey) ? renderMatome._draft : { epKey, freeText: "" };
+  const draft = (renderMatome._draft?.epKey === epKey) ? renderMatome._draft : { epKey, pick: -1 };
   renderMatome._draft = draft;
   const h = s.hook || {};
+  const choices = h.choices || [];
   el.innerHTML = `
     <div class="eyebrow">CASE FILE — ${esc(s.genre || "")}</div>
     <h1 class="view-title">${esc(s.title)}</h1>
     ${h.event ? `<div class="card"><p>${esc(h.event)}</p></div>` : ""}
     ${h.question ? `<p class="q-line">${esc(h.question)}</p>` : ""}
-    <p class="small">答えを見る前に、あなたの読みを一文で。書くと思考が固定され、答え合わせが効きます(スキップも可)。</p>
-    <textarea class="input" id="free" placeholder="たぶん◯◯だから、◯◯なんだと思う">${esc(draft.freeText)}</textarea>
+    <p class="small">答えを見る前に、あなたの読みに一番近いものを選んでください(どれも一理あります)。選ぶと記録に残り、後で答え合わせできます。</p>
+    <div class="choices" id="hooks">
+      ${choices.map((c, i) => `<button class="choice ${draft.pick === i ? "is-selected" : ""}" data-i="${i}">${esc(c)}</button>`).join("")}
+    </div>
     <button class="btn" id="open">めくる — 解説を読む</button>`;
-  const ta = el.querySelector("#free");
-  ta.addEventListener("input", () => { draft.freeText = ta.value; });
+  el.querySelectorAll("#hooks .choice").forEach(btn => btn.onclick = () => {
+    draft.pick = Number(btn.dataset.i);
+    el.querySelectorAll("#hooks .choice").forEach(b => b.classList.toggle("is-selected", b === btn));
+  });
   el.querySelector("#open").onclick = () => {
-    app.store.setDayLog(epKey, { suiri: { done: true, freeText: ta.value.trim() }, title: s.title });
+    const picked = draft.pick >= 0 ? (choices[draft.pick] ?? "") : "";
+    app.store.setDayLog(epKey, { suiri: { done: true, freeText: picked }, title: s.title });
     app.store.recordActivity();
     renderMatome._draft = null;
     renderBody(el, app, s, epKey);

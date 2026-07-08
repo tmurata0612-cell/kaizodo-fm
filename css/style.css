@@ -227,7 +227,14 @@ textarea.input { min-height: 110px; resize: vertical; line-height: 1.7; }
 .dgm-col li::marker { color: var(--amber-deep); }
 
 /* ラジオ */
-.radio-controls { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+/* 再生・速度・シークは常に画面上部に固定(長い台本をスクロールしても操作できる) */
+.radio-sticky {
+  position: sticky; top: 0; z-index: 15;
+  background: var(--bg);
+  margin: 0 -16px; padding: 8px 16px 6px;
+  border-bottom: 1px solid var(--line);
+}
+.radio-controls { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .playbtn {
   width: 60px; height: 60px; border-radius: 50%; border: none;
   background: var(--amber); color: #1A1405; font-size: 22px; cursor: pointer; flex-shrink: 0;

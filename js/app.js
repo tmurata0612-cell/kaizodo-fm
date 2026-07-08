@@ -11,7 +11,7 @@ import { renderSettings } from "./settings.js";
 const app = {
   store,
   player,
-  data: { lenses: null, models: null, characters: null, index: null },
+  data: { models: null, characters: null, index: null },
   episode: null,
   episodeMeta: { key: null, isPool: false, isToday: false },
   todayKey: null, // ローテーションで決まった「本日の放送」のキー
@@ -23,7 +23,6 @@ const app = {
     return custom || app.data.characters.characters[id]?.displayName || id;
   },
   charIcon(id) { return app.data.characters.characters[id]?.icon || "🎙"; },
-  lensById(id) { return app.data.lenses.lenses.find(l => l.id === id); },
   modelById(id) { return app.data.models.models.find(m => m.id === id); },
   fillVars(text) {
     const s = store.get().settings;
@@ -185,13 +184,12 @@ function setupChrome() {
 
 async function boot() {
   setupChrome();
-  const [lenses, models, characters, index] = await Promise.all([
-    fetchJson("data/lenses.json"),
+  const [models, characters, index] = await Promise.all([
     fetchJson("data/models.json", { fresh: true }),
     fetchJson("data/characters.json"),
     fetchJson("content/index.json", { fresh: true }),
   ]);
-  app.data = { lenses, models, characters, index };
+  app.data = { models, characters, index };
   await resolveInitialEpisode();
   navigate("home", { replace: true });
 

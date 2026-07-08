@@ -77,7 +77,8 @@ function archiveCard(app, currentKey) {
     </button>`;
   }).join("");
   return `<div class="card">
-    <div class="eyebrow">ARCHIVE — おかわり</div>
+    <div class="eyebrow">過去の放送 — おかわり</div>
+    <p class="small">別の回を聴き直せます(図鑑＝集めたレンズ、とは別物)。</p>
     <div class="progress-list">${rows}</div>
   </div>`;
 }

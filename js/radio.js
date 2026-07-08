@@ -12,19 +12,21 @@ export function renderRadio(el, app) {
   el.innerHTML = `
     <div class="eyebrow">ON AIR SCRIPT</div>
     <h1 class="view-title">${esc(ep.radio.title)}</h1>
-    <div class="radio-controls">
-      <button class="iconbtn skipbtn" id="prevLine" aria-label="ひとつ戻る">⏮</button>
-      <button class="playbtn" id="play" aria-label="再生/停止">▶</button>
-      <button class="iconbtn skipbtn" id="nextLine" aria-label="ひとつ進む">⏭</button>
-      <div class="rate-ctrl" role="group" aria-label="再生速度">
-        <button class="iconbtn" id="rateDown" aria-label="遅くする">◀</button>
-        <span class="mono" id="rateLabel">×${ps.rate}</span>
-        <button class="iconbtn" id="rateUp" aria-label="速くする">▶</button>
+    <div class="radio-sticky">
+      <div class="radio-controls">
+        <button class="iconbtn skipbtn" id="prevLine" aria-label="ひとつ戻る">⏮</button>
+        <button class="playbtn" id="play" aria-label="再生/停止">▶</button>
+        <button class="iconbtn skipbtn" id="nextLine" aria-label="ひとつ進む">⏭</button>
+        <div class="rate-ctrl" role="group" aria-label="再生速度">
+          <button class="iconbtn" id="rateDown" aria-label="遅くする">◀</button>
+          <span class="mono" id="rateLabel">×${ps.rate}</span>
+          <button class="iconbtn" id="rateUp" aria-label="速くする">▶</button>
+        </div>
       </div>
-    </div>
-    <div class="seek-row">
-      <input type="range" id="seek" min="0" max="${ps.script.length - 1}" step="1" value="${ps.lineIndex}" aria-label="シーク">
-      <span class="mono small" id="seekLabel">${ps.lineIndex + 1}/${ps.script.length}</span>
+      <div class="seek-row">
+        <input type="range" id="seek" min="0" max="${ps.script.length - 1}" step="1" value="${ps.lineIndex}" aria-label="シーク">
+        <span class="mono small" id="seekLabel">${ps.lineIndex + 1}/${ps.script.length}</span>
+      </div>
     </div>
     <div class="eq" aria-hidden="true">${"<i></i>".repeat(20)}</div>
     <p class="small" id="voiceNote">${player.supported ? "台本の行をタップすると、そこから再生します。" : "このブラウザは読み上げに未対応です。台本をお楽しみください。"}</p>
